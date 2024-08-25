@@ -1,6 +1,6 @@
 import Title from 'src/components/Title';
 import Header from 'src/components/Header';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -14,7 +14,9 @@ import { formatDateRating, getCurrentDateRating } from 'src/utils/timeUtils';
 import { fetchGetRoomDetail, fetchPostRoomRating, fetchRatingByRoomId } from 'src/stores/roomSlice/roomSlice';
 
 const RoomDetail = () => {
+    const navigate = useNavigate();
     let { roomId } = useParams();
+
     const dispatch = useDispatch();
 
     const user = useSelector((state) => state.auth.user);
@@ -100,6 +102,11 @@ const RoomDetail = () => {
     };
 
     const handleComment = async () => {
+        // if (user) {
+        //     navigate('/login');
+        //     return;
+        // }
+
         await dispatch(
             fetchPostRoomRating({
                 crateRoomRatingDto: { star, comment },
@@ -111,7 +118,6 @@ const RoomDetail = () => {
                 if (handleResponse(result)) {
                     return;
                 }
-                // setComment((prev) => [...prev, originalPromiseResult.data]);
                 setStar('');
                 setComment('');
                 setRoomRating([...roomRating, result.data]);

@@ -13,6 +13,15 @@ export const fetchGetProductsByService = createAsyncThunk('/products', async (se
     }
 });
 
+// admin
+export const fetchGetProductAdmin = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+export const fetchGetProductsAdmin = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+export const fetchCreateProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+export const fetchUpdateProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+export const fetchDeleteProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+export const fetchDeletePermanentlyProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+export const fetchRevertProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+
 const initialState = {
     entities: [],
     loading: 'idle',

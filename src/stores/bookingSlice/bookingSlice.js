@@ -12,6 +12,21 @@ export const fetchCreateBooking = createAsyncThunk('booking', async (createBooki
     }
 });
 
+export const fetchGetBookingsUser = createAsyncThunk('/bookings', async (thunkAPI) => {
+    try {
+        const response = await bookingService.getBookingsUser();
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
+
+//admin
+export const fetchGetBookingsAdmin = createAsyncThunk('/bookings', async (thunkAPI) => {});
+export const fetchCheckinBookingById = createAsyncThunk('/bookings', async (thunkAPI) => {});
+export const fetchCheckoutBookingById = createAsyncThunk('/bookings', async (thunkAPI) => {});
+
 const initialState = {
     entities: [],
     loading: 'idle',

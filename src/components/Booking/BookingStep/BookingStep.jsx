@@ -6,7 +6,7 @@ import step3 from 'src/assets/images/booking/step3.png';
 import Services from '../Services/Services';
 import Rooms from '../Rooms/Rooms';
 
-const Booking = ({ step, expectedCheckIn, expectedCheckOut, num, type, roomCallBack, serviceCallBack }) => {
+const Booking = ({ step, expectedCheckIn, expectedCheckOut, num, type, keyWord, roomCallBack, serviceCallBack }) => {
     return (
         <>
             <section className="mb-5 mt-5 ml-2">
@@ -20,6 +20,7 @@ const Booking = ({ step, expectedCheckIn, expectedCheckOut, num, type, roomCallB
                     expectedCheckOut={expectedCheckOut}
                     num={num}
                     type={type}
+                    keyWord={keyWord}
                     roomCallBack={roomCallBack}
                 />
             )}

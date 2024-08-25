@@ -28,6 +28,7 @@ function FilterBooking({ filter, startDateInit, endDateInit, expectedCheckInInit
     const [expectedCheckOut, setExpectedCheckOut] = useState(expectedCheckOutInit);
     const [num, setNum] = useState('');
     const [type, setType] = useState('');
+    const [keyWord, setKeyword] = useState('');
 
     const changeStartDate = (date) => {
         setStartDate(date);
@@ -52,9 +53,9 @@ function FilterBooking({ filter, startDateInit, endDateInit, expectedCheckInInit
     ));
 
     return (
-        <div className="container" style={{ padding: '0 20px', fontFamily: 'serif' }}>
+        <div className="container container-booking" style={{ padding: '0 20px', fontFamily: 'serif' }}>
             <div className="row">
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-6">
                     <div className="room-item">
                         <h4>Check in</h4>
                         <DatePicker
@@ -62,12 +63,12 @@ function FilterBooking({ filter, startDateInit, endDateInit, expectedCheckInInit
                             selected={startDate}
                             onChange={changeStartDate}
                             startDate={startDate}
-                            minDate={startDate}
+                            minDate={new Date()}
                             customInput={<CustomInput />}
                         />
                     </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-6">
                     <div className="room-item">
                         <h4>Check out</h4>
                         <DatePicker
@@ -80,7 +81,7 @@ function FilterBooking({ filter, startDateInit, endDateInit, expectedCheckInInit
                         />
                     </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-6">
                     <div className="room-item">
                         <h4>Person Number</h4>
                         <select
@@ -103,7 +104,7 @@ function FilterBooking({ filter, startDateInit, endDateInit, expectedCheckInInit
                         </select>
                     </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-6">
                     <div className="room-item">
                         <h4>Type Room</h4>
                         <select
@@ -123,16 +124,32 @@ function FilterBooking({ filter, startDateInit, endDateInit, expectedCheckInInit
                         </select>
                     </div>
                 </div>
+                <div className="col-lg-4 col-md-6">
+                    <div className="room-item">
+                        <h4>Search</h4>
+                        <input
+                            style={{ width: '100%', height: '49px', fontSize: '18px' }}
+                            className="custom-select select-option"
+                            type="text"
+                            onChange={(e) => {
+                                setKeyword(e.target.value);
+                            }}
+                            placeholder="Search room name, type, ..."
+                        />
+                    </div>
+                </div>
             </div>
-            <button
-                className="btn btn-primary"
-                onClick={() => {
-                    filter(expectedCheckIn, expectedCheckOut, num, type);
-                }}
-                style={{ backgroundColor: '#5892b5 !important' }}
-            >
-                Get room available
-            </button>
+            <div style={{ backgroundColor: '#5892b5 !important', display: 'flex', justifyContent: 'center' }}>
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        filter(expectedCheckIn, expectedCheckOut, num, type, keyWord);
+                    }}
+                    style={{ backgroundColor: '#5892b5 !important' }}
+                >
+                    Check rooms available
+                </button>
+            </div>
         </div>
     );
 }

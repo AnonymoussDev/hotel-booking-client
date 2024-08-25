@@ -161,14 +161,14 @@ const Rooms = () => {
                                                 <Link className="primary-btn" to={'/room-detail/' + room.id}>
                                                     More Details
                                                 </Link>
-                                                {!room.isAvailable && (
+                                                {/* {!room.isAvailable && (
                                                     <div
                                                         style={{ marginLeft: '8px', color: 'red' }}
                                                         className="primary-btn"
                                                     >
                                                         Booked
                                                     </div>
-                                                )}
+                                                )} */}
                                             </div>
                                         </div>
                                     </div>

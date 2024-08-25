@@ -10,6 +10,10 @@ class BookingService {
             body: createBookingDto,
         });
     }
+
+    async getBookingsUser() {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_CORE_URL}/api/v1/booking`);
+    }
 }
 
 export default BookingService;

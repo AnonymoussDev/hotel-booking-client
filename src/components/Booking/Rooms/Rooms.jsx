@@ -3,11 +3,12 @@ import { fetchGetAvailableRooms } from 'src/stores/roomSlice/roomSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import OwlCarousel from 'react-owl-carousel';
 import './room.scss';
 import handleResponse from 'src/utils/handleResponse';
 import Swal from 'sweetalert2';
 
-const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, roomCallBack }) => {
+const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, keyWord, roomCallBack }) => {
     const dispatch = useDispatch();
     const [rooms, setRooms] = useState([]);
     const [pageNum, setPageNum] = useState(1);
@@ -20,6 +21,7 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, roomCallBack }) =
     };
 
     let checkValidTime = (dayStart, dayEnd) => {
+        console.log(new Date(dayStart).getTime() <= Date.now() && new Date(dayEnd).getTime() >= Date.now());
         return new Date(dayStart).getTime() <= Date.now() && new Date(dayEnd).getTime() >= Date.now();
     };
 
@@ -31,6 +33,7 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, roomCallBack }) =
                     expectedCheckOut: transferDateTimeToTime(expectedCheckOut),
                     num,
                     type,
+                    keyWord,
                     pageNum,
                 }),
             )
@@ -53,7 +56,7 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, roomCallBack }) =
                 });
         })();
         transferDateTimeToTime(expectedCheckIn);
-    }, [expectedCheckIn, expectedCheckOut, num, type, pageNum, dispatch]);
+    }, [expectedCheckIn, expectedCheckOut, num, type, keyWord, pageNum, dispatch]);
 
     return (
         <div>
@@ -64,17 +67,33 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, roomCallBack }) =
                             return (
                                 <div key={room.id} className="col-lg-12 col-md-6">
                                     <div className="room-item" style={{ display: 'flex' }}>
-                                        <div style={{ width: '40%', display: 'inline-flex' }}>
-                                            <img
-                                                style={{
-                                                    width: '280px',
-                                                    height: '386px',
-                                                    objectFit: 'cover',
-                                                }}
-                                                src={room?.medias?.[0]?.url}
-                                                alt=""
-                                            />
-                                        </div>
+                                        <OwlCarousel
+                                            style={{
+                                                // position: "absolute",
+                                                top: '0',
+                                                width: '280px',
+                                                height: '430px',
+                                            }}
+                                            className="owl-main hero-slider"
+                                            items={1}
+                                            loop
+                                        >
+                                            {room?.medias?.map((media) => {
+                                                return (
+                                                    <div key={media.id} className="item hs-item set-bg">
+                                                        <img
+                                                            style={{
+                                                                height: '100%',
+                                                                width: '100%',
+                                                                objectFit: 'cover',
+                                                            }}
+                                                            src={media.url}
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
+                                        </OwlCarousel>
                                         <div style={{ width: '60%', position: 'relative' }} className="ri-text">
                                             <h4>{room.name}</h4>
                                             <div style={{ display: 'flex' }}>
@@ -133,7 +152,7 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, roomCallBack }) =
                                                     </tr>
                                                     <tr>
                                                         <td className="r-o">Capacity:</td>
-                                                        <td>Max persion {room.capacity}</td>
+                                                        <td>Max {room.capacity} persion</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="r-o">Bed:</td>
@@ -189,7 +208,7 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, roomCallBack }) =
                         })}
                     <div className="col-lg-12">
                         <div className="room-pagination">
-                            {pageNum != 1 && (
+                            {pageNum !== 1 && (
                                 <a
                                     href="#"
                                     onClick={(e) => {

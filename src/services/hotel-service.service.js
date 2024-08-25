@@ -10,6 +10,13 @@ class HotelServiceService {
             params: options,
         });
     }
+
+    // admin
+    async getServicesAdmin(options) {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/service`, {
+            params: options,
+        });
+    }
 }
 
 export default HotelServiceService;

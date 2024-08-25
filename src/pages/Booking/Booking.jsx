@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import './booking.scss';
-import BookingStep from 'src/components/BookingStep/BookingStep';
-import Reservation from 'src/components/Reservation/Reservation';
+import BookingStep from 'src/components/Booking/BookingStep/BookingStep';
+import Reservation from 'src/components/Booking/Reservation/Reservation';
 import Header from 'src/components/Header';
-import FilterBooking from 'src/components/FilterBooking/FilterBooking';
+import FilterBooking from 'src/components/Booking/FilterBooking/FilterBooking';
 import Swal from 'sweetalert2';
 
 const Booking = () => {
@@ -28,7 +28,7 @@ const Booking = () => {
     const endDateInit = new Date();
     endDateInit.setDate(startDateInit.getDate() + 1);
     const expectedCheckInInit = setDateFormat(startDateInit, 'checkin');
-    const expectedCheckOutInit = setDateFormat(endDateInit, 'checkin');
+    const expectedCheckOutInit = setDateFormat(endDateInit, 'checkout');
 
     const [step, setStep] = useState(1);
     const [expectedCheckIn, setExpectedCheckIn] = useState(expectedCheckInInit);
@@ -36,21 +36,35 @@ const Booking = () => {
     const [services, setServices] = useState([]);
     const [num, setNum] = useState('');
     const [type, setType] = useState('');
-    const [room, setRoom] = useState({});
+    const [keyWord, setKeyword] = useState('');
+    const [rooms, setRooms] = useState([]);
 
-    const filter = (expectedCheckIn, expectedCheckOut, num, type) => {
+    const filter = (expectedCheckIn, expectedCheckOut, num, type, keyWord) => {
         setExpectedCheckIn(expectedCheckIn);
         setExpectedCheckOut(expectedCheckOut);
         setNum(num);
         setType(type);
+        setKeyword(keyWord);
     };
 
+    console.log(keyWord);
+
     const roomCallBack = (roomSelect) => {
-        if (roomSelect.id === room?.id && room) {
-            Swal.fire('You have added this room!');
-            return;
-        }
-        setRoom(roomSelect);
+        setRooms((prevRooms) => {
+            const existingRoom = prevRooms[roomSelect.id];
+            if (existingRoom) {
+                Swal.fire({
+                    title: 'You have added this room!',
+                    icon: 'warning',
+                });
+                return;
+            }
+            Swal.fire({
+                title: 'Room selected successfully',
+                icon: 'success',
+            });
+            return [...prevRooms, roomSelect];
+        });
     };
 
     const serviceCallBack = (newService) => {
@@ -60,8 +74,6 @@ const Booking = () => {
     const reservation = (step) => {
         setStep(step);
     };
-
-    console.log(expectedCheckIn, expectedCheckOut);
 
     return (
         <>
@@ -73,7 +85,7 @@ const Booking = () => {
                 expectedCheckInInit={expectedCheckInInit}
                 expectedCheckOutInit={expectedCheckOutInit}
             />
-            <div className="container">
+            <div className="container container-booking">
                 <div className="row">
                     <main className="col-md-8">
                         <BookingStep
@@ -82,28 +94,27 @@ const Booking = () => {
                             expectedCheckOut={expectedCheckOut}
                             num={num}
                             type={type}
+                            keyWord={keyWord}
                             reservation={reservation}
                             roomCallBack={roomCallBack}
                             serviceCallBack={serviceCallBack}
                         />
                     </main>
                     <aside className="col-md-4">
-                        <section className="mb-4">
-                            <img src="/images/coco-drink.png" width="300" alt="" />
-                            <h2 className="text-uppercase font-weight-bold">TODAY ONLY: 10% OFF</h2>
-                            <p>
-                                - Book <span className="text-underline">today</span> and get an exclusive{' '}
-                                <strong>10% discount</strong> on your stay.
+                        <section className="mb-4 mt-5">
+                            <h3 className="section-title">Discover Our Booking</h3>
+                            <p style={{ textAlign: 'justify' }}>
+                                Explore our available rooms and services. Select your preferred date and time to see our
+                                best options. For any assistance, feel free to reach out to our support team. We look
+                                forward to serving you!
                             </p>
-                            <button className="btn btn-primary text-uppercase">Enjoy</button>
                         </section>
                         <Reservation
                             expectedCheckIn={expectedCheckIn}
                             expectedCheckOut={expectedCheckOut}
-                            num={num}
-                            type={type}
+                            keyWord={keyWord}
                             reservation={reservation}
-                            room={room}
+                            rooms={rooms}
                             services={services}
                             step={step}
                         />
