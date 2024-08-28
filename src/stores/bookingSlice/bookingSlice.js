@@ -23,9 +23,56 @@ export const fetchGetBookingsUser = createAsyncThunk('/bookings', async (thunkAP
 });
 
 //admin
-export const fetchGetBookingsAdmin = createAsyncThunk('/bookings', async (thunkAPI) => {});
-export const fetchCheckinBookingById = createAsyncThunk('/bookings', async (thunkAPI) => {});
-export const fetchCheckoutBookingById = createAsyncThunk('/bookings', async (thunkAPI) => {});
+export const fetchGetBookingsAdmin = createAsyncThunk('/bookings', async (thunkAPI) => {
+    try {
+        const response = await bookingService.getBookingsAdmin();
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
+export const fetchGetBooking = createAsyncThunk('/booking', async (bookingId, thunkAPI) => {
+    try {
+        const response = await bookingService.getBookingDetailAdmin(bookingId);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
+export const addService = createAsyncThunk(
+    '/booking/add-service',
+    async ({ bookingId, serviceBookingDto }, thunkAPI) => {
+        try {
+            console.log(bookingId);
+            const response = await bookingService.addBookingAdmin(bookingId, serviceBookingDto);
+            return response.data;
+        } catch (err) {
+            console.log(err);
+            return err.response.data;
+        }
+    },
+);
+export const fetchCheckinBookingById = createAsyncThunk('booking', async ({ bookingId }, thunkAPI) => {
+    try {
+        const response = await bookingService.checkinBookingById(bookingId);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
+
+export const fetchCheckoutBookingById = createAsyncThunk('booking', async ({ bookingId }, thunkAPI) => {
+    try {
+        const response = await bookingService.checkoutBookingById(bookingId);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
 
 const initialState = {
     entities: [],

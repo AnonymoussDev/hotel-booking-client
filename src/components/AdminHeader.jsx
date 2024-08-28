@@ -34,13 +34,13 @@ const AdminHeader = () => {
                         data-bs-toggle="dropdown"
                     >
                         <span className="user-img">
-                            <img src={user && user.avatar} alt="" />
+                            <img src={user && user?.avatar ? avatar : user.avatar} alt="" />
                             <span className="status online" />
                         </span>
                     </a>
                     <div
                         style={{
-                            display: isBlock == true ? 'block' : 'none',
+                            display: isBlock === true ? 'block' : 'none',
                             top: '-70%',
                             left: '-100%',
                         }}
@@ -72,7 +72,7 @@ const AdminHeader = () => {
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => {
                                     storageService.remove('token');
-                                    window.location.href = '/auth/login';
+                                    window.location.href = '/login';
                                 }}
                             >
                                 <img src={logout} className="me-2" alt="img" />

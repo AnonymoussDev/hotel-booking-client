@@ -49,14 +49,33 @@ import bookingInterface from 'src/interfaces/booking.interface.js';
 import Swal from 'sweetalert2';
 // import postInterface from 'src/interfaces/post.interface.js';
 import Card from 'src/components/Card/Card';
+import Card2 from 'src/components/Card/Card2';
 // import BillModal from 'src/components/Modal/BillModal';
 
+import { Table, Tabs } from 'antd';
+
 const Manage = () => {
+    const dispatch = useDispatch();
+    let { option } = useParams();
+
     const [iconsActive, setIconsActive] = useState('tab1');
     const [deleteFlag, setDeleteFlag] = useState(false);
     const [pageNum, setPageNum] = useState(1);
-    const [pageTotal, setPageTotal] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalElements, setTtotalElements] = useState(0);
     const [keyword, setKeyword] = useState('');
+    const [keys, setKeys] = useState([]);
+    const [data, setData] = useState({ key: option, data: [] });
+
+    useEffect(() => {
+        // Đặt lại các state về giá trị ban đầu khi option thay đổi
+        setIconsActive('tab1');
+        setDeleteFlag(false);
+        setPageNum(1);
+        setPageSize(10);
+        setTtotalElements(0);
+        setKeyword('');
+    }, [option]); // useEffect sẽ chạy khi option thay đổi
 
     const callbackKeyWord = (keyword) => {
         setKeyword(keyword);
@@ -68,42 +87,42 @@ const Manage = () => {
         }
         if (value === 'tab1') {
             setDeleteFlag(false);
+            setPageNum(1);
+            setPageSize(10);
+            setTtotalElements(0);
+            setKeyword('');
         } else {
             setDeleteFlag(true);
+            setPageNum(1);
+            setPageSize(10);
+            setTtotalElements(0);
+            setKeyword('');
         }
 
         setIconsActive(value);
     };
 
-    const dispatch = useDispatch();
-    const [keys, setKeys] = useState([]);
-    const [data, setData] = useState([]);
-    let { option, optionId } = useParams();
-
-    console.log(option);
-
     useEffect(() => {
-        console.log(keyword);
         (async () => {
             let func;
             if (option === 'rooms') {
-                func = fetchGetRoomsAdmin({ deleteFlag, pageNum, keyword });
+                func = fetchGetRoomsAdmin({ deleteFlag, pageNum, pageSize, keyword });
                 setKeys([...Object.keys(roomsInterface)]);
             } else if (option === 'sales') {
-                func = fetchGetSales({ deleteFlag, pageNum, keyword });
+                func = fetchGetSales({ deleteFlag, pageNum, pageSize, keyword });
                 setKeys([...Object.keys(saleInterface)]);
             } else if (option === 'users') {
-                func = fetchGetUsers({ isLocked: deleteFlag, pageNum, keyword });
+                func = fetchGetUsers({ isLocked: deleteFlag, pageNum, pageSize, keyword });
                 setKeys([...Object.keys(usersInterface)]);
             } else if (option === 'services') {
                 console.log('services');
-                func = fetchGetHotelServicesAdmin({ deleteFlag, pageNum, keyword });
+                func = fetchGetHotelServicesAdmin({ deleteFlag, pageNum, pageSize, keyword });
                 setKeys([...Object.keys(servicesInterface)]);
             } else if (option === 'products') {
-                func = fetchGetProductsAdmin({ deleteFlag, pageNum, keyword });
+                func = fetchGetProductsAdmin({ deleteFlag, pageNum, pageSize, keyword });
                 setKeys([...Object.keys(productInterface)]);
             } else if (option === 'bookings') {
-                func = fetchGetBookingsAdmin({ deleteFlag, pageNum, keyword });
+                func = fetchGetBookingsAdmin({ deleteFlag, pageNum, pageSize, keyword });
                 setKeys([...Object.keys(bookingInterface)]);
             }
             // else if (option == 'posts') {
@@ -112,23 +131,13 @@ const Manage = () => {
             // }
             await dispatch(func)
                 .then(unwrapResult)
-                .then((originalPromiseResult) => {
-                    console.log(originalPromiseResult);
-                    if (originalPromiseResult.status.code === '00') {
-                        let data = originalPromiseResult.data.items;
-                        if (originalPromiseResult.data.meta.totalPages !== 0) {
-                            setPageTotal(originalPromiseResult.data.meta.totalPages);
+                .then((result) => {
+                    if (result.status.code === '00') {
+                        let data = result.data.items;
+                        if (result.data.meta.totalElements !== 0) {
+                            setTtotalElements(result.data.meta.totalElements);
                         }
-
-                        if (option === 'rooms') {
-                            data = data.map((item) => {
-                                if (item.sale?.salePercent) {
-                                    item['discount'] = item.sale.salePercent + '%';
-                                }
-                                return item;
-                            });
-                        }
-                        setData(data);
+                        setData({ key: option, data: data });
                     } else {
                         Swal.fire('Lỗi server', '', 'error');
                     }
@@ -137,40 +146,39 @@ const Manage = () => {
                     console.log(rejectedValueOrSerializedError);
                 });
         })();
-    }, [option, deleteFlag, pageNum, keyword]);
+    }, [option, deleteFlag, pageNum, pageSize, keyword]);
 
-    const deleteOption = async (id) => {
-        console.log(id);
+    const deleteOption = async (idToUpdate) => {
         let func;
         if (option === 'rooms') {
             if (deleteFlag === false) {
-                func = fetchDeleteRoom(id);
+                func = fetchDeleteRoom(idToUpdate);
             } else {
-                func = fetchDeletePermanentlyRoom(id);
+                func = fetchDeletePermanentlyRoom(idToUpdate);
             }
         } else if (option === 'users') {
             if (deleteFlag === false) {
-                func = fetchLockUnlockUser({ userId: id, isLocked: true });
+                func = fetchLockUnlockUser({ userId: idToUpdate, isLocked: true });
             } else {
-                func = fetchDeleteUser(id);
+                func = fetchDeleteUser(idToUpdate);
             }
         } else if (option === 'sales') {
             if (deleteFlag === false) {
-                func = fetchDeleteSale(id);
+                func = fetchDeleteSale(idToUpdate);
             } else {
-                func = fetchDeletePermanentlySale(id);
+                func = fetchDeletePermanentlySale(idToUpdate);
             }
         } else if (option === 'services') {
             if (deleteFlag === false) {
-                func = fetchDeleteHotelService(id);
+                func = fetchDeleteHotelService(idToUpdate);
             } else {
-                func = fetchDeletePermanentlyHotelService(id);
+                func = fetchDeletePermanentlyHotelService(idToUpdate);
             }
         } else if (option === 'products') {
             if (deleteFlag === false) {
-                func = fetchDeleteProduct(id);
+                func = fetchDeleteProduct(idToUpdate);
             } else {
-                func = fetchDeletePermanentlyProduct(id);
+                func = fetchDeletePermanentlyProduct(idToUpdate);
             }
         }
         // else if (option == 'posts') {
@@ -181,7 +189,7 @@ const Manage = () => {
         //     }
         // }
         Swal.fire({
-            title: 'Bạn có chắc chắn xóa ?',
+            title: option === 'users' ? 'Bạn có chắc chắn khóa tài khoản này' : 'Bạn có chắc chắn xóa ?',
             text: '',
             icon: 'warning',
             showCancelButton: true,
@@ -191,15 +199,17 @@ const Manage = () => {
             cancelButtonText: 'Hủy bỏ',
         }).then(async (e) => {
             if (e.isConfirmed) {
-                const result = await dispatch(func)
+                await dispatch(func)
                     .then(unwrapResult)
-                    .then((originalPromiseResult) => {
-                        if (originalPromiseResult.status.code === '00') {
-                            // setData(originalPromiseResult.data.items);
-                            const newData = data.filter((item) => item.id !== id);
-                            setData(newData);
-                            // console.log(originalPromiseResult.data.items);
-                            Swal.fire('Xóa thành công', '', 'success');
+                    .then((result) => {
+                        if (result.status.code === '00') {
+                            const newData = data.data.filter((item) => item.id !== idToUpdate);
+                            setData({ key: option, data: newData });
+                            Swal.fire(
+                                option === 'users' ? 'Khóa tài khoản thành công' : 'Xóa dữ liệu thành công',
+                                '',
+                                'success',
+                            );
                         } else {
                             Swal.fire('Lỗi Server', '', 'error');
                         }
@@ -212,24 +222,27 @@ const Manage = () => {
         });
     };
 
-    const revertOption = async (id) => {
+    const revertOption = async (idToRemove) => {
         let func;
         if (option === 'rooms') {
-            func = fetchRevertRoomById(id);
+            func = fetchRevertRoomById(idToRemove);
         } else if (option === 'users') {
-            func = fetchLockUnlockUser({ userId: id, isLocked: false });
+            func = fetchLockUnlockUser({ userId: idToRemove, isLocked: false });
         } else if (option === 'sales') {
-            func = fetchRevertSale(id);
+            func = fetchRevertSale(idToRemove);
         } else if (option === 'services') {
-            func = fetchRevertHotelService(id);
+            func = fetchRevertHotelService(idToRemove);
         } else if (option === 'products') {
-            func = fetchRevertProduct(id);
+            func = fetchRevertProduct(idToRemove);
         }
         // else if (option == 'posts') {
         //     func = fetchRevertPost(id);
         // }
         Swal.fire({
-            title: 'Bạn có chắc chắn phục hồi ?',
+            title:
+                option === 'users'
+                    ? 'Bạn có chắc chắn mở khóa tài khoản này ?'
+                    : 'Bạn có chắc chắn khôi phục dữ liệu này ?',
             text: '',
             icon: 'warning',
             showCancelButton: true,
@@ -238,13 +251,17 @@ const Manage = () => {
             confirmButtonText: 'Chấp nhận',
         }).then(async (e) => {
             if (e.isConfirmed) {
-                const result = await dispatch(func)
+                await dispatch(func)
                     .then(unwrapResult)
                     .then((originalPromiseResult) => {
                         console.log('delete', originalPromiseResult);
-                        Swal.fire('Phục hồi thành công', '', 'success');
-                        const newData = data.filter((item) => item.id !== id);
-                        setData(newData);
+                        Swal.fire(
+                            option === 'users' ? 'Mở khóa tài khoản thành công!' : 'Khôi phục dữ liệu thành công!',
+                            '',
+                            'success',
+                        );
+                        const newData = data.data.filter((item) => item.id !== idToRemove);
+                        setData({ key: option, data: newData });
                     })
                     .catch((rejectedValueOrSerializedError) => {
                         console.log(rejectedValueOrSerializedError);
@@ -296,7 +313,7 @@ const Manage = () => {
                                                 <MDBIcon fas icon="lock" /> Lock
                                             </>
                                         )}
-                                        {option !== 'users' && (
+                                        {option !== 'users' && option !== 'bookings' && (
                                             <>
                                                 <MDBIcon fas icon="trash-alt" /> Trash
                                             </>
@@ -307,29 +324,54 @@ const Manage = () => {
 
                             <MDBTabsContent>
                                 <MDBTabsPane show={iconsActive === 'tab1'}>
-                                    <Card
+                                    {/* <Card
                                         option={option}
                                         data={data}
                                         keys={keys}
                                         deleteOption={deleteOption}
                                         deleteFlag={deleteFlag}
                                         callbackKeyWord={callbackKeyWord}
+                                    /> */}
+                                    <Card2
+                                        option={option}
+                                        data={option === data.key ? data.data : []}
+                                        pageNum={pageNum}
+                                        setPageNum={setPageNum}
+                                        pageSize={pageSize}
+                                        setPageSize={setPageSize}
+                                        totalElements={totalElements}
+                                        deleteOption={deleteOption}
+                                        deleteFlag={deleteFlag}
+                                        callbackKeyWord={callbackKeyWord}
                                     />
                                 </MDBTabsPane>
                                 <MDBTabsPane show={iconsActive === 'tab2'}>
-                                    <Card
+                                    {/* <Card
                                         option={option}
                                         data={data}
                                         keys={keys}
                                         deleteOption={deleteOption}
                                         revertOption={revertOption}
                                         deleteFlag={deleteFlag}
-                                    />{' '}
+                                    />{' '} */}
+                                    <Card2
+                                        option={option}
+                                        data={option === data.key ? data.data : []}
+                                        pageNum={pageNum}
+                                        setPageNum={setPageNum}
+                                        pageSize={pageSize}
+                                        setPageSize={setPageSize}
+                                        totalElements={totalElements}
+                                        deleteOption={deleteOption}
+                                        revertOption={revertOption}
+                                        deleteFlag={deleteFlag}
+                                        callbackKeyWord={callbackKeyWord}
+                                    />
                                 </MDBTabsPane>
                                 <MDBTabsPane show={iconsActive === 'tab3'}>Tab 3 content</MDBTabsPane>
                             </MDBTabsContent>
                         </>
-                        <div className="col-lg-12">
+                        {/* <div className="col-lg-12">
                             <div className="room-pagination">
                                 {pageNum !== 1 && (
                                     <a
@@ -355,7 +397,7 @@ const Manage = () => {
                                     </a>
                                 )}
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

@@ -49,6 +49,42 @@ class RoomService {
     async getRoomDetailAdmin(roomId) {
         return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/${roomId}`);
     }
+
+    async createRoom(roomCreateDTO) {
+        return await this.httpService.request(
+            'POST',
+            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room`,
+            { body: roomCreateDTO },
+            false,
+        );
+    }
+
+    async updateRoomById(roomId, updateRoomDto) {
+        return await this.httpService.request(
+            'PUT',
+            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/${roomId}`,
+            { body: updateRoomDto },
+            false,
+        );
+    }
+
+    async deleteRoomById(roomId) {
+        return await this.httpService.request('DELETE', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/${roomId}`);
+    }
+
+    async deleteRoomPermanentlyById(roomId) {
+        return await this.httpService.request(
+            'DELETE',
+            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/trash/delete/${roomId}`,
+        );
+    }
+
+    async revertRoomById(roomId) {
+        return await this.httpService.request(
+            'POST',
+            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/trash/restore/${roomId}`,
+        );
+    }
 }
 
 export default RoomService;

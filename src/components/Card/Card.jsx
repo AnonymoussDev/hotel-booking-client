@@ -285,7 +285,7 @@ const Card = ({ option, data, keys, deleteOption, revertOption, deleteFlag, call
                                         </th>
                                     )}
                                     {keys && keys.map((key) => <th>{formatHeader(key)}</th>)}
-                                    {option === 'bookings' && <th>email</th>}
+                                    {option === 'bookings' && <th>Email</th>}
                                     <th style={{ width: '120px' }}>Settings</th>
                                 </tr>
                             </thead>
@@ -301,7 +301,7 @@ const Card = ({ option, data, keys, deleteOption, revertOption, deleteFlag, call
                                                     <input
                                                         type="checkbox"
                                                         onChange={(e) => {
-                                                            if (e.target.checked == true) {
+                                                            if (e.target.checked === true) {
                                                                 active.push(index);
                                                             } else {
                                                                 active.pop(index);
@@ -314,7 +314,7 @@ const Card = ({ option, data, keys, deleteOption, revertOption, deleteFlag, call
                                                 </td>
                                             )}
                                             {keys && keys.map((key) => <td>{item[key]}</td>)}
-                                            {option === 'bookings' && <th>{item && item.user?.email}</th>}
+                                            {option === 'bookings' && <th>{item && item.booker?.email}</th>}
 
                                             <td
                                                 style={{

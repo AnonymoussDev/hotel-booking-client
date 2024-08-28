@@ -26,7 +26,7 @@ const Modal = ({ displayModal, statusModal, messageModal, callback, url }) => {
                     <div className="modal-content">
                         <div
                             style={{
-                                background: status == 'success' ? '#47c9a2' : '#E3503A',
+                                background: status === 'success' ? '#47c9a2' : '#E3503A',
                             }}
                             className="modal-header justify-content-center"
                         >
@@ -58,7 +58,7 @@ const Modal = ({ displayModal, statusModal, messageModal, callback, url }) => {
             </div>
             <div
                 style={{ display: display ? 'block' : 'none' }}
-                class={'modal-backdrop' + ' fade ' + (display ? 'show' : '')}
+                className={'modal-backdrop' + ' fade ' + (display ? 'show' : '')}
             ></div>
         </div>
     );

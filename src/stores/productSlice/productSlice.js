@@ -14,13 +14,55 @@ export const fetchGetProductsByService = createAsyncThunk('/products', async (se
 });
 
 // admin
-export const fetchGetProductAdmin = createAsyncThunk('products', async (roomId, thunkAPI) => {});
-export const fetchGetProductsAdmin = createAsyncThunk('products', async (roomId, thunkAPI) => {});
-export const fetchCreateProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
-export const fetchUpdateProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
-export const fetchDeleteProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
-export const fetchDeletePermanentlyProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
-export const fetchRevertProduct = createAsyncThunk('products', async (roomId, thunkAPI) => {});
+export const fetchGetProductsAdmin = createAsyncThunk('/products', async (options, thunkAPI) => {
+    try {
+        const response = await productService.getProductsAdmin(options);
+        return response.data;
+    } catch (err) {
+        return err.response.data;
+    }
+});
+export const fetchGetProductAdmin = createAsyncThunk('/products', async (options, thunkAPI) => {
+    try {
+        const response = await productService.getProductAdmin(options);
+        return response.data;
+    } catch (err) {
+        return err.response.data;
+    }
+});
+
+export const fetchCreateProduct = createAsyncThunk('product', async (creatProductDto, thunkAPI) => {
+    try {
+        const response = await productService.createProduct(creatProductDto);
+        return response.data;
+    } catch (err) {
+        return err.response.data;
+    }
+});
+
+export const fetchUpdateProduct = createAsyncThunk('product', async ({ productId, productUpdateDto }, thunkAPI) => {
+    try {
+        const response = await productService.updateProductById(productId, productUpdateDto);
+        return response.data;
+    } catch (err) {
+        return err.response.data;
+    }
+});
+
+export const fetchDeleteProduct = createAsyncThunk('sale', async (productId, thunkAPI) => {
+    const response = await productService.deleteProductById(productId);
+    return response.data;
+});
+
+export const fetchRevertProduct = createAsyncThunk('sale', async (productId, thunkAPI) => {
+    const response = await productService.revertProductById(productId);
+    return response.data;
+});
+
+export const fetchDeletePermanentlyProduct = createAsyncThunk('sale', async (productId, thunkAPI) => {
+    const response = await productService.deletePermanentlyProductById(productId);
+    return response.data;
+});
 
 const initialState = {
     entities: [],

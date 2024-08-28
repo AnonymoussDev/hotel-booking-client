@@ -10,14 +10,15 @@ import { verticalData } from 'src/configs/verticalChart';
 import storageService from 'src/services/storage.service';
 
 const Statistic = () => {
+    const token = storageService.getAccessToken();
+
     const [lineData, setLineData] = useState(null);
     const [pieData, setPieData] = useState(null);
     const [barData, setBarData] = useState(null);
-    const [monthBar, setMonthBar] = useState('1');
+    const [monthBar, setMonthBar] = useState('8');
 
     useMemo(() => {
         console.log(monthBar);
-
         (async () => {
             try {
                 const promiseAll = await Promise.allSettled([
@@ -28,7 +29,7 @@ const Statistic = () => {
                             }/api/v1/statistic/revenue?fromMonth=1&toMonth=12&year=${new Date().getFullYear()}`,
                             {
                                 headers: {
-                                    Authorization: 'Bearer ' + storageService.get('token'),
+                                    ...(token && { Authorization: `Bearer ${token}` }),
                                 },
                             },
                         )
@@ -36,7 +37,7 @@ const Statistic = () => {
                     await (
                         await fetch(`${process.env.REACT_APP_API_ADMIN_URL}/api/v1/statistic/top-booking`, {
                             headers: {
-                                Authorization: 'Bearer ' + storageService.get('token'),
+                                ...(token && { Authorization: `Bearer ${token}` }),
                             },
                         })
                     ).json(),
@@ -47,7 +48,7 @@ const Statistic = () => {
                             }/api/v1/statistic/room-booked-month?month=${monthBar}&year=${new Date().getFullYear()}`,
                             {
                                 headers: {
-                                    Authorization: 'Bearer ' + storageService.get('token'),
+                                    ...(token && { Authorization: `Bearer ${token}` }),
                                 },
                             },
                         )

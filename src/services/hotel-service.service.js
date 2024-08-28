@@ -17,6 +17,40 @@ class HotelServiceService {
             params: options,
         });
     }
+
+    async getServiceAdmin(serviceId) {
+        return await this.httpService.request(
+            'GET',
+            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/service/${serviceId}`,
+        );
+    }
+
+    async updateServiceById(serviceId, updateServiceDto) {
+        return await this.httpService.request(
+            'PUT',
+            `${process.env.REACT_APP_API_URL}/api/v1/service/${serviceId}`,
+            { body: updateServiceDto },
+            false,
+        );
+    }
+
+    async deleteServiceById(serviceId) {
+        return await this.httpService.request('DELETE', `${process.env.REACT_APP_API_URL}/api/v1/service/${serviceId}`);
+    }
+
+    async revertServiceById(serviceId) {
+        return await this.httpService.request(
+            'POST',
+            `${process.env.REACT_APP_API_URL}/api/v1/service/trash/restore/${serviceId}`,
+        );
+    }
+
+    async deletePermanentlyServiceById(serviceId) {
+        return await this.httpService.request(
+            'DELETE',
+            `${process.env.REACT_APP_API_URL}/api/v1/service/trash/delete/${serviceId}`,
+        );
+    }
 }
 
 export default HotelServiceService;

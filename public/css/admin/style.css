@@ -3052,7 +3052,7 @@ div.dataTables_wrapper div.dataTables_info {
     -webkit-transition: all 0.2s ease;
     -ms-transition: all 0.2s ease;
     transition: all 0.2s ease;
-    border-right: 1px solid #e8ebed;
+    /* border-right: 1px solid #e8ebed; */
 }
 .header .header-left .logo {
     display: inline-block;
@@ -4025,7 +4025,7 @@ span.select2-container.select2-container--default.select2-container--open {
     background-color: transparent;
     border-right: 1px solid transparent;
     margin-top: 0;
-    z-index: 1001;
+    z-index: 1000;
     position: fixed;
     top: 60px;
     bottom: 0;
