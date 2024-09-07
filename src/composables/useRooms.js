@@ -54,5 +54,41 @@ export function useRooms() {
         },
     ];
 
-    return { roomTableColumns };
+    const roomUpdateFields = [
+        {
+            title: 'Id',
+            dataIndex: 'id',
+            isDisable: true,
+        },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+        },
+        {
+            title: 'Price',
+            dataIndex: 'price',
+        },
+        {
+            title: 'Capacity',
+            dataIndex: 'capacity',
+        },
+        {
+            title: 'size',
+            dataIndex: 'size',
+        },
+        {
+            title: 'bed',
+            dataIndex: 'bed',
+        },
+        {
+            title: 'description',
+            dataIndex: 'description',
+        },
+        {
+            title: 'Services',
+            dataIndex: 'services',
+        },
+    ];
+
+    return { roomTableColumns, roomUpdateFields };
 }

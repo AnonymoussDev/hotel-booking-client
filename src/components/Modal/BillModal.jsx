@@ -57,7 +57,9 @@ const BillModal = ({ displayModal, statusModal, messageModal, callback, booking 
                                         <div className="card-body p-5" ref={printRef}>
                                             <h2>
                                                 Hey{' '}
-                                                {booking && Object.keys(booking).length > 0 && booking.booker.firstName}
+                                                {booking &&
+                                                    Object.keys(booking).length > 0 &&
+                                                    `${booking.booker.lastName} ${booking.booker.firstName}`}
                                                 ,
                                             </h2>
                                             <p className="fs-sm">This is the receipt for a payment</p>
@@ -100,14 +102,7 @@ const BillModal = ({ displayModal, statusModal, messageModal, callback, booking 
                                                     </div>
                                                     <div className="col-md-6 text-md-end">
                                                         <div className="text-muted mb-2">Payment To</div>
-                                                        <strong>Hotel Booking</strong>
-                                                        <p className="fs-sm">
-                                                            Thanh Xuan, Ha Noi
-                                                            <br />
-                                                            <a href="#!" className="text-purple">
-                                                                thanhhuonghotelluxury@gmail.com
-                                                            </a>
-                                                        </p>
+                                                        <strong>Thanh Huong Luxury Hotel</strong>
                                                     </div>
                                                 </div>
                                             </div>
@@ -169,7 +164,7 @@ const BillModal = ({ displayModal, statusModal, messageModal, callback, booking 
                                                 </div>
                                                 <div className="d-flex justify-content-end">
                                                     <p className="text-muted me-3">Surcharges:</p>
-                                                    <span>
+                                                    {/* <span>
                                                         {(booking &&
                                                             Object.keys(booking).length > 0 &&
                                                             booking.surcharges.length > 0 &&
@@ -191,12 +186,12 @@ const BillModal = ({ displayModal, statusModal, messageModal, callback, booking 
                                                                 style: 'currency',
                                                                 currency: 'VND',
                                                             })}
-                                                    </span>
+                                                    </span> */}
                                                 </div>
                                                 <div className="d-flex justify-content-end mt-3">
                                                     <h5 className="me-3">Total:</h5>
                                                     <h5 className="text-success">
-                                                        {booking &&
+                                                        {/* {booking &&
                                                             Object.keys(booking).length > 0 &&
                                                             (
                                                                 booking.totalRoomPrice +
@@ -211,7 +206,7 @@ const BillModal = ({ displayModal, statusModal, messageModal, callback, booking 
                                                             ).toLocaleString('it-IT', {
                                                                 style: 'currency',
                                                                 currency: 'VND',
-                                                            })}
+                                                            })} */}
                                                     </h5>
                                                 </div>
                                             </div>

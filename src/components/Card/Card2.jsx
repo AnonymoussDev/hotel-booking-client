@@ -10,7 +10,7 @@ import { useServices } from 'src/composables/useServices';
 import { useProducts } from 'src/composables/useProducts';
 import { useBookings } from 'src/composables/useBookings';
 import { Table, Space } from 'antd';
-import BillModal from '../Modal/BillModal';
+import BillModal from '../Modal/BillModal2';
 import './card.scss';
 import Swal from 'sweetalert2';
 
@@ -30,7 +30,11 @@ import order from 'src/assets/images/admin/order.png';
 // import printer from 'src/assets/images/admin/printer.png';
 // import eye from 'src/assets/images/admin/eye.png';
 // import { fetchAddSaleToRoom, fetchGetSales, fetchRemoveSaleToRoom } from 'src/stores/saleSlice/saleSlice';
-import { fetchCheckinBookingById, fetchCheckoutBookingById } from 'src/stores/bookingSlice/bookingSlice';
+import {
+    fetchGetBooking,
+    fetchCheckinBookingById,
+    fetchCheckoutBookingById,
+} from 'src/stores/bookingSlice/bookingSlice';
 
 const Card = ({
     option,
@@ -47,17 +51,10 @@ const Card = ({
 }) => {
     const dispatch = useDispatch();
     const [displayModal, setDisplayModal] = useState(false);
-    const [statusModal, setStatusModal] = useState('');
-    const [messageModal, setMessageModal] = useState('');
-    const [booking, setBooking] = useState({});
-    const [roomsSale, setRoomsSale] = useState([]);
-    const [test, setTest] = useState('');
-    const [active, setActive] = useState([]);
+    const [bookingDetail, setBookingDetail] = useState({});
 
-    const callback = () => {
+    const handleCloseModel = () => {
         setDisplayModal(false);
-        setStatusModal('');
-        setMessageModal('');
     };
 
     const setPagination = ({ page, pageSize }) => {
@@ -247,12 +244,20 @@ const Card = ({
                     <Link
                         title="Xem Bill"
                         style={{ marginLeft: '8px' }}
-                        onClick={(e) => {
+                        onClick={async (e) => {
                             e.preventDefault();
-                            setBooking(record);
+                            try {
+                                const result = await dispatch(fetchGetBooking(record.id)).then(unwrapResult);
+                                if (result.status.code === '00') {
+                                    setBookingDetail(result.data);
+                                } else {
+                                    Swal.fire(result.status.message, '', 'error');
+                                }
+                            } catch (error) {
+                                console.log(error);
+                                Swal.fire('Có lỗi xảy ra', '', 'error');
+                            }
                             setDisplayModal(true);
-                            setStatusModal('success');
-                            setMessageModal('Cập nhật thành công');
                         }}
                     >
                         <img style={{ width: '24px', height: '24px' }} src={invoice} alt="img" />
@@ -261,15 +266,10 @@ const Card = ({
             </Space>
         ),
     });
+
     return (
         <>
-            <BillModal
-                displayModal={displayModal}
-                statusModal={statusModal}
-                messageModal={messageModal}
-                booking={booking}
-                callback={callback}
-            />
+            <BillModal displayModal={displayModal} handleCloseModel={handleCloseModel} bookingDetail={bookingDetail} />
             <div className="card">
                 <div className="card-body">
                     <div className="table-top">

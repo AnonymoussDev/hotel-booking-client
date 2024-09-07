@@ -22,7 +22,11 @@ const UpdateBooking = ({ data, setData }) => {
     const [services, setServices] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isDisableInputPrice, setIsDisableInputPrice] = useState(false);
-    const [newService, setNewService] = useState({ service: { id: '', title: '', price: '' }, quantity: 1 });
+    const [newService, setNewService] = useState({
+        service: { id: '', title: '', price: '' },
+        quantity: 1,
+        bookingPrice: '',
+    });
 
     useEffect(() => {
         if (data?.services) {
@@ -78,14 +82,13 @@ const UpdateBooking = ({ data, setData }) => {
 
     const handleOk = async () => {
         try {
-            console.log({ serviceId: newService.service.id, quantity: newService.quantity });
             await dispatch(
                 addService({
                     bookingId: optionId,
                     serviceBookingDto: {
                         serviceId: newService.service.id,
                         quantity: newService.quantity,
-                        price: newService.service.price,
+                        price: newService.bookingPrice,
                     },
                 }),
             )
@@ -96,7 +99,7 @@ const UpdateBooking = ({ data, setData }) => {
                     }
                     setIsModalVisible(false);
                     setServices([...services, { ...newService, id: services.length + 1 }]);
-                    setNewService({ service: { id: '', title: '', price: '' }, quantity: 1 });
+                    setNewService({ service: { id: '', title: '', price: '' }, quantity: 1, bookingPrice: '' });
                 })
                 .catch((error) => {
                     throw error;
@@ -121,7 +124,7 @@ const UpdateBooking = ({ data, setData }) => {
         } else {
             setIsDisableInputPrice(false);
         }
-        setNewService({ service: selectedServiceValue, quantity: 1 });
+        setNewService({ service: selectedServiceValue, quantity: 1, bookingPrice: selectedServiceValue?.price });
     };
 
     const serviceColumns = [
@@ -132,8 +135,8 @@ const UpdateBooking = ({ data, setData }) => {
         },
         {
             title: 'Price',
-            dataIndex: ['service', 'price'],
-            key: 'servicePrice',
+            dataIndex: 'bookingPrice',
+            key: 'bookingPrice',
             render: (price) => `${price?.toLocaleString()} VND`,
         },
         {
@@ -144,7 +147,7 @@ const UpdateBooking = ({ data, setData }) => {
         {
             title: 'Total',
             key: 'total',
-            render: (text, record) => `${(record.service.price * record.quantity)?.toLocaleString()} VND`,
+            render: (text, record) => `${(record.bookingPrice * record.quantity)?.toLocaleString()} VND`,
         },
     ];
 
@@ -174,22 +177,22 @@ const UpdateBooking = ({ data, setData }) => {
             <Card title="Booking Rooms" style={{ marginBottom: '20px' }}>
                 <Row gutter={[16, 16]}>
                     {data.rooms &&
-                        data.rooms.map((room) => (
-                            <Col key={room.id} xs={24} sm={12} md={8} lg={6}>
+                        data.rooms.map((item, index) => (
+                            <Col key={index} xs={24} sm={12} md={8} lg={6}>
                                 <Card
-                                    title={`Phòng: ${room.name}`}
+                                    title={`Phòng: ${item.room.name}`}
                                     bordered={false}
                                     style={{ borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
                                 >
                                     <p>
-                                        <strong>Loại phòng:</strong> {room.type}
+                                        <strong>Loại phòng:</strong> {item.room.type}
                                     </p>
                                     <p>
-                                        <strong>Số giường:</strong> {room.bed}
+                                        <strong>Số giường:</strong> {item.room.bed}
                                     </p>
                                     <p>
                                         <strong>Giá:</strong>{' '}
-                                        {room.price?.toLocaleString('it-IT', {
+                                        {item.room.price?.toLocaleString('it-IT', {
                                             style: 'currency',
                                             currency: 'VND',
                                         })}
@@ -228,14 +231,9 @@ const UpdateBooking = ({ data, setData }) => {
                         </Form.Item>
                         <Form.Item label="Price">
                             <Input
-                                value={newService.service?.price}
+                                value={newService.bookingPrice}
                                 disabled={isDisableInputPrice}
-                                onChange={(e) =>
-                                    setNewService({
-                                        ...newService,
-                                        service: { ...newService.service, price: Number(e.target.value) },
-                                    })
-                                }
+                                onChange={(e) => setNewService({ ...newService, bookingPrice: Number(e.target.value) })}
                             />
                         </Form.Item>
                         <Form.Item label="Quantity">

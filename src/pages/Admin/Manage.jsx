@@ -280,7 +280,9 @@ const Manage = () => {
                     <div className="content">
                         <div className="page-header">
                             <div className="page-title">
-                                <h4>{option.charAt(0).toUpperCase() + option.slice(1)} List</h4>
+                                <h5 style={{ fontSize: '16px' }}>
+                                    {option.charAt(0).toUpperCase() + option.slice(1)} List
+                                </h5>
                                 <h6>Manage your {option.charAt(0).toUpperCase() + option.slice(1)}</h6>
                             </div>
                             {option !== 'users' && option !== 'bookings' && (

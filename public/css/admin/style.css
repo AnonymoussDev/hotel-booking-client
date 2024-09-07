@@ -1609,7 +1609,7 @@ div#global-loader,
 }
 .page-wrapper {
     margin: 0 0 0 260px;
-    padding: 60px 0 0;
+    padding: 20px 0 0;
     position: relative;
     left: 0;
     -webkit-transition: all 0.2s ease;

@@ -9,6 +9,8 @@ const Header = () => {
     const location = useLocation();
     const pathName = location.pathname;
     const user = useSelector((state) => state.auth?.user);
+    console.log(user);
+
     const token = storageService.get('token');
 
     return (
@@ -50,7 +52,7 @@ const Header = () => {
                                                 alt=""
                                             />
                                             <span>
-                                                {user?.firstName?.concat(' ' + user?.lastName)}{' '}
+                                                {user?.lastName?.concat(' ' + user?.firstName)}{' '}
                                                 <i className="fa fa-angle-down" />
                                             </span>
                                             <div style={{ width: '200px' }} className="flag-dropdown">

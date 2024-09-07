@@ -75,7 +75,7 @@ const Statistic = () => {
                             ],
                             datasets: [
                                 {
-                                    label: 'Dataset 1',
+                                    label: 'Revenue statistics',
                                     data: data,
                                     borderColor: '#EA7C31',
                                     backgroundColor: '#EA7C31',
@@ -165,8 +165,8 @@ const Statistic = () => {
                     <div className="content">
                         <div className="content-revenue"></div>
                         <div style={{ display: 'flex', width: '100%' }} className="content-statistic">
-                            <div style={{ width: '80%' }} className="content-statistic-room">
-                                {lineData && <Line options={lineOptions} data={lineData} />}
+                            <div style={{ width: '60%' }} className="content-statistic-room">
+                                {lineData && <Line data={lineData} />}
                             </div>
                             <div style={{ width: '20%' }} className="content-statistic-room">
                                 {/* <Pie data={pieData} /> */}

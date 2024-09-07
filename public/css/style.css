@@ -31,6 +31,7 @@
 
 /* Template default CSS
 /*----------------------------------------*/
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
 
 html,
 body {
@@ -46,9 +47,10 @@ h4,
 h5,
 h6 {
     margin: 0;
-    color: #111111;
-    font-weight: 400;
-    font-family: 'Lora', serif;
+    color: #353131;
+    font-weight: 900;
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    /* font-family: 'Lora', serif; */
 }
 h1 {
     font-size: 70px;
@@ -369,7 +371,7 @@ ol {
 .top-nav .tn-right .language-option span {
     font-size: 16px;
     color: #19191a;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
     font-weight: 500;
 }
 .top-nav .tn-right .language-option .flag-dropdown {

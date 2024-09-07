@@ -34,7 +34,7 @@ export const fetchVerifyRegister = createAsyncThunk('auth/register', async ({ ne
     }
 });
 
-export const fetchGetCurrentUser = createAsyncThunk('/user', async (thunkAPI) => {
+export const fetchGetCurrentUser = createAsyncThunk('auth/user', async (thunkAPI) => {
     try {
         const response = await authService.getCurrentUser();
         return response.data;
@@ -54,7 +54,7 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action) => {
-            state.value = { ...action.payload };
+            state.user = { ...action.payload };
         },
     },
 });

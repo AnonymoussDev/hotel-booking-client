@@ -4,7 +4,7 @@ import RoomDetail from 'src/pages/Room/RoomDetail';
 
 import Booking from 'src/pages/Booking/Booking';
 import BookingCart from 'src/pages/Booking/BookingCart';
-import Statistic from 'src/pages/Admin/Statistic';
+import Statistic from 'src/pages/Admin/StatisticV2';
 import Manage from '../pages/Admin/Manage';
 import AddManage from 'src/pages/Admin/AddManage';
 import UpdateManage from 'src/pages/Admin/UpdateManage';
