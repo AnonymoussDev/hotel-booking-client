@@ -61,7 +61,7 @@ const Login = () => {
                     console.log(index);
                     window.location.href = '/';
                 } else {
-                    window.location.href = '/admin/users';
+                    window.location.href = '/admin';
                 }
             })
             .catch((error) => {

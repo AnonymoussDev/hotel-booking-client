@@ -50,6 +50,16 @@ export const fetchGetRoomsAdmin = createAsyncThunk('/rooms', async (options, thu
     }
 });
 
+export const fetchGetRoomAvailablesAdmin = createAsyncThunk('/rooms', async (options, thunkAPI) => {
+    try {
+        const response = await roomService.getRoomAvailablesAdmin(options);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
+
 export const fetchGetRoomAdmin = createAsyncThunk('/room', async (roomId, thunkAPI) => {
     try {
         const response = await roomService.getRoomDetailAdmin(roomId);
@@ -93,6 +103,26 @@ export const fetchDeletePermanentlyRoom = createAsyncThunk('room', async (roomId
 export const fetchRevertRoomById = createAsyncThunk('room', async (roomId, thunkAPI) => {
     const response = await roomService.revertRoomById(roomId);
     return response.data;
+});
+
+export const fetchAddSaleToRoom = createAsyncThunk('room', async ({ saleId, roomIds }, thunkAPI) => {
+    try {
+        const response = await roomService.addSaleToRoom(saleId, roomIds);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
+
+export const fetchRemoveSaleToRoom = createAsyncThunk('room', async ({ roomIds }, thunkAPI) => {
+    try {
+        const response = await roomService.removeSaleToRoom(roomIds);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
 });
 
 const initialState = {

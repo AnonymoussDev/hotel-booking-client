@@ -1,26 +1,80 @@
 import React, { useEffect, useState } from 'react';
 import Header from 'src/components/Header';
-import { Link } from 'react-router-dom';
-import { fetchGetBookingsUser } from 'src/stores/bookingSlice/bookingSlice';
+import { fetchGetBookingsUser, fetchGetBooking } from 'src/stores/bookingSlice/bookingSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import handleResponse from 'src/utils/handleResponse';
 import Swal from 'sweetalert2';
 
+import BookingModel from 'src/components/Modal/BookingModel';
+import { Table, Button, Tag } from 'antd';
+import { useBookings } from 'src/composables/useBookings';
+
 const BookingCart = () => {
     const dispatch = useDispatch();
+
     const [bookings, setBookings] = useState([]);
-    const user = useSelector((state) => state.auth.user);
+    const [pageNum, setPageNum] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalElements, setTtotalElements] = useState(0);
+    const [keyword, setKeyword] = useState('');
+    const [bookingDetail, setBookingDetail] = useState({});
+    const [displayModal, setDisplayModal] = useState(false);
+
+    const { bookingUserTableColumns } = useBookings();
+    bookingUserTableColumns.push({
+        title: 'Status',
+        width: 150,
+        fixed: 'right',
+        render: (text, record) => (
+            <Tag color={record?.status === 'PENDING' ? '#f50' : record?.status === 'CANCEL' ? '#c1121f' : '#87d068'}>
+                {record?.status === 'PENDING'
+                    ? 'Chưa nhận phòng'
+                    : record?.status === 'CANCEL'
+                      ? 'Đã hủy'
+                      : record?.status === 'CHECKED_IN'
+                        ? 'Đã check-in'
+                        : 'Đã thanh toán'}
+            </Tag>
+        ),
+    });
+    bookingUserTableColumns.push({
+        title: 'Action',
+        width: 150,
+        fixed: 'right',
+        render: (text, record) => (
+            <Button
+                onClick={() => showBooking(record.id)}
+                type="primary"
+                style={{ backgroundColor: '#5892b5', borderColor: '#5892b5' }}
+            >
+                Xem chi tiết
+            </Button>
+        ),
+    });
+
+    const handleCloseModel = () => {
+        setDisplayModal(false);
+        setBookingDetail({});
+    };
+
+    const setPagination = ({ page, pageSize }) => {
+        console.log(pageSize);
+
+        setPageNum(page);
+        setPageSize(pageSize);
+    };
 
     useEffect(() => {
         (async () => {
-            await dispatch(fetchGetBookingsUser())
+            await dispatch(fetchGetBookingsUser({ pageNum, pageSize, keyword }))
                 .then(unwrapResult)
                 .then((result) => {
                     console.log(result.data.items);
                     if (handleResponse(result)) {
                         return;
                     }
+                    setTtotalElements(result.data.meta.totalElements);
                     setBookings(result.data.items);
                 })
                 .catch((error) => {
@@ -34,103 +88,64 @@ const BookingCart = () => {
         })();
 
         // return () => {}; // no-op
-    }, []);
+    }, [pageNum, pageSize, keyword, dispatch]);
+
+    const showBooking = async (bookingId) => {
+        try {
+            const result = await dispatch(fetchGetBooking(bookingId)).then(unwrapResult);
+            if (result.status.code === '00') {
+                setBookingDetail(result.data);
+            } else {
+                Swal.fire(result.status.message, '', 'error');
+            }
+        } catch (error) {
+            console.log(error);
+            Swal.fire('Có lỗi xảy ra', '', 'error');
+        }
+        setDisplayModal(true);
+    };
+
     return (
         <>
+            <BookingModel
+                displayModal={displayModal}
+                handleCloseModel={handleCloseModel}
+                bookingDetail={bookingDetail}
+            />
             <Header />
             <section className="mb-5">
                 <div className="container">
-                    <h2>Danh sach phòng đã đặt</h2>
+                    <h2>Danh sách phòng đã đặt</h2>
                 </div>
             </section>
             <section className="mt-5">
                 <div className="container">
-                    <div class="input-group mb-4">
+                    <div className="input-group mb-4" style={{ width: '30%' }}>
                         <input
                             type="text"
-                            class="form-control"
+                            className="form-control"
                             id="advanced-search-input"
-                            placeholder="phrase in:field1,field2"
+                            placeholder="Search booking"
                         />
-                        <button class="btn btn-primary" id="advanced-search-button" type="button">
-                            <i class="fa fa-search"></i>
+                        <button className="btn btn-primary" id="advanced-search-button" type="button">
+                            <i className="fa fa-search"></i>
                         </button>
                     </div>
                     <div className="table-responsive">
-                        <table className="table datanew">
-                            <thead>
-                                <tr>
-                                    <th>Loại phòng đã đặt</th>
-                                    <th>Số lượng người</th>
-                                    <th>Người đặt</th>
-                                    <th>Checkin</th>
-                                    <th>Checkout</th>
-                                    <th>Đơn giá</th>
-                                    <th>Trạng thái</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {bookings &&
-                                    bookings.map((booking) => {
-                                        return (
-                                            <tr>
-                                                <td>
-                                                    {booking.rooms?.[0]?.name}{' '}
-                                                    {booking.rooms?.[0]?.price.toLocaleString('it-IT', {
-                                                        style: 'currency',
-                                                        currency: 'VND',
-                                                    })}
-                                                    /Pernight
-                                                </td>
-                                                <td>{booking.rooms?.[0]?.capacity}</td>
-                                                <td>
-                                                    {booking.booker.firstName.concat(' ' + booking.booker.lastName)}
-                                                </td>
-                                                <td>{booking.checkIn}</td>
-                                                <td>{booking.checkOut}</td>
-                                                <td>
-                                                    {booking.totalRoomPrice.toLocaleString('it-IT', {
-                                                        style: 'currency',
-                                                        currency: 'VND',
-                                                    })}
-                                                </td>
-                                                <td>
-                                                    <span
-                                                        style={{
-                                                            color: booking.status === 'PENDING' ? '#f50' : '#87d068',
-                                                        }}
-                                                    >
-                                                        {booking.status === 'PENDING'
-                                                            ? 'Chưa thanh toán'
-                                                            : booking.status === 'CANCEL'
-                                                              ? 'Đã hủy'
-                                                              : 'Đã thanh toán'}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <Link to={'/booking-detail/' + booking.id}>Xem chi tiết</Link>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-
-                                {/* <tr>
-                  <td>Premium King Room 159$/Pernight</td>
-                  <td>2</td>
-                  <td>User</td>
-                  <td>2/4/2023</td>
-                  <td>3/4/2023</td>
-                  <td>300$</td>
-                  <td>
-                    <span style={{ color: "#f50" }}>Chưa thanh toán</span>
-                  </td>
-                  <td>
-                    <Link to={"/booking-detail"}>Xem chi tiết</Link>
-                  </td>
-                </tr> */}
-                            </tbody>
-                        </table>
+                        <Table
+                            key={(record) => record.id}
+                            columns={bookingUserTableColumns}
+                            dataSource={bookings}
+                            bordered
+                            pagination={{
+                                onChange: (page, pageSize) => setPagination({ page, pageSize }),
+                                current: pageNum,
+                                pageSize: pageSize,
+                                total: totalElements,
+                                position: ['bottomCenter'],
+                            }}
+                            scroll={{ y: 400 }}
+                        />{' '}
                     </div>
                 </div>
             </section>

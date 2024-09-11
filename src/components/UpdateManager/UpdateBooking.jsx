@@ -213,9 +213,11 @@ const UpdateBooking = ({ data, setData }) => {
             <Card title="Booking Services">
                 <Table dataSource={services} columns={serviceColumns} pagination={false} rowKey="id" bordered />
                 <Space style={{ marginTop: '20px' }}>
-                    <Button className="btn-primary" type="primary" onClick={showModal}>
-                        Add Service
-                    </Button>
+                    {data.status !== 'CANCEL' && (
+                        <Button className="btn-primary" type="primary" onClick={showModal}>
+                            Add Service
+                        </Button>
+                    )}
                 </Space>
 
                 <Modal title="Add New Service" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>

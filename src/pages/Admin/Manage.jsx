@@ -11,6 +11,7 @@ import {
     fetchDeletePermanentlyRoom,
     fetchDeleteRoom,
     fetchGetRoomsAdmin,
+    fetchGetRoomAvailablesAdmin,
     fetchRevertRoomById,
 } from 'src/stores/roomSlice/roomSlice';
 import {
@@ -33,26 +34,8 @@ import {
     fetchRevertProduct,
 } from 'src/stores/productSlice/productSlice';
 import { fetchGetBookingsAdmin } from 'src/stores/bookingSlice/bookingSlice';
-// import {
-//     fetchDeletePermanentlyPost,
-//     fetchDeletePost,
-//     fetchGetPosts,
-//     fetchGetPostsAdmin,
-//     fetchRevertPost,
-// } from 'src/stores/postSlice/postSlice';
-import saleInterface from 'src/interfaces/sales.interface';
-import roomsInterface from 'src/interfaces/rooms.interface';
-import usersInterface from 'src/interfaces/users.interface';
-import servicesInterface from 'src/interfaces/service.interface.js';
-import productInterface from 'src/interfaces/product.interface.js';
-import bookingInterface from 'src/interfaces/booking.interface.js';
 import Swal from 'sweetalert2';
-// import postInterface from 'src/interfaces/post.interface.js';
 import Card from 'src/components/Card/Card';
-import Card2 from 'src/components/Card/Card2';
-// import BillModal from 'src/components/Modal/BillModal';
-
-import { Table, Tabs } from 'antd';
 
 const Manage = () => {
     const dispatch = useDispatch();
@@ -64,8 +47,15 @@ const Manage = () => {
     const [pageSize, setPageSize] = useState(10);
     const [totalElements, setTtotalElements] = useState(0);
     const [keyword, setKeyword] = useState('');
-    const [keys, setKeys] = useState([]);
     const [data, setData] = useState({ key: option, data: [] });
+
+    const startDateInit = new Date();
+    const endDateInit = new Date();
+    endDateInit.setDate(startDateInit.getDate() + 1);
+    const [roomFilter, setRoomFilter] = useState({
+        checkIn: startDateInit,
+        checkOut: endDateInit,
+    });
 
     useEffect(() => {
         // Đặt lại các state về giá trị ban đầu khi option thay đổi
@@ -91,39 +81,62 @@ const Manage = () => {
             setPageSize(10);
             setTtotalElements(0);
             setKeyword('');
-        } else {
+        } else if (value === 'tab2') {
             setDeleteFlag(true);
             setPageNum(1);
             setPageSize(10);
             setTtotalElements(0);
             setKeyword('');
+        } else if (value === 'tab3') {
+            setDeleteFlag(false);
+            setPageNum(1);
+            setPageSize(10);
+            setTtotalElements(0);
+            setKeyword('');
         }
-
         setIconsActive(value);
+    };
+
+    const setDateFormat = (date) => {
+        let day = date.getDate();
+        if (day < 10) {
+            day = '0' + day;
+        }
+        let month = date.getMonth() + 1;
+        if (month < 10) {
+            month = '0' + month;
+        }
+        const year = date.getFullYear();
+
+        return year + '-' + month + '-' + day;
     };
 
     useEffect(() => {
         (async () => {
+            console.log(roomFilter);
+
             let func;
-            if (option === 'rooms') {
+            if (option === 'rooms' && iconsActive !== 'tab3') {
                 func = fetchGetRoomsAdmin({ deleteFlag, pageNum, pageSize, keyword });
-                setKeys([...Object.keys(roomsInterface)]);
+            } else if (option === 'rooms' && iconsActive === 'tab3') {
+                func = fetchGetRoomAvailablesAdmin({
+                    pageNum,
+                    pageSize,
+                    keyword,
+                    checkIn: setDateFormat(roomFilter.checkIn),
+                    checkOut: setDateFormat(roomFilter.checkOut),
+                });
             } else if (option === 'sales') {
                 func = fetchGetSales({ deleteFlag, pageNum, pageSize, keyword });
-                setKeys([...Object.keys(saleInterface)]);
             } else if (option === 'users') {
                 func = fetchGetUsers({ isLocked: deleteFlag, pageNum, pageSize, keyword });
-                setKeys([...Object.keys(usersInterface)]);
             } else if (option === 'services') {
                 console.log('services');
                 func = fetchGetHotelServicesAdmin({ deleteFlag, pageNum, pageSize, keyword });
-                setKeys([...Object.keys(servicesInterface)]);
             } else if (option === 'products') {
                 func = fetchGetProductsAdmin({ deleteFlag, pageNum, pageSize, keyword });
-                setKeys([...Object.keys(productInterface)]);
             } else if (option === 'bookings') {
                 func = fetchGetBookingsAdmin({ deleteFlag, pageNum, pageSize, keyword });
-                setKeys([...Object.keys(bookingInterface)]);
             }
             // else if (option == 'posts') {
             //     func = fetchGetPostsAdmin({ deleteFlag, pageNum, keyword });
@@ -146,7 +159,7 @@ const Manage = () => {
                     console.log(rejectedValueOrSerializedError);
                 });
         })();
-    }, [option, deleteFlag, pageNum, pageSize, keyword]);
+    }, [option, deleteFlag, pageNum, pageSize, keyword, iconsActive, roomFilter]);
 
     const deleteOption = async (idToUpdate) => {
         let func;
@@ -322,20 +335,23 @@ const Manage = () => {
                                         )}
                                     </MDBTabsLink>
                                 </MDBTabsItem>
+                                {option === 'rooms' && (
+                                    <MDBTabsItem>
+                                        <MDBTabsLink
+                                            onClick={() => handleIconsClick('tab3')}
+                                            active={iconsActive === 'tab3'}
+                                        >
+                                            <MDBIcon fas icon="database" /> Available
+                                        </MDBTabsLink>
+                                    </MDBTabsItem>
+                                )}
                             </MDBTabs>
 
                             <MDBTabsContent>
                                 <MDBTabsPane show={iconsActive === 'tab1'}>
-                                    {/* <Card
+                                    <Card
                                         option={option}
-                                        data={data}
-                                        keys={keys}
-                                        deleteOption={deleteOption}
-                                        deleteFlag={deleteFlag}
-                                        callbackKeyWord={callbackKeyWord}
-                                    /> */}
-                                    <Card2
-                                        option={option}
+                                        tab={iconsActive}
                                         data={option === data.key ? data.data : []}
                                         pageNum={pageNum}
                                         setPageNum={setPageNum}
@@ -348,16 +364,9 @@ const Manage = () => {
                                     />
                                 </MDBTabsPane>
                                 <MDBTabsPane show={iconsActive === 'tab2'}>
-                                    {/* <Card
+                                    <Card
                                         option={option}
-                                        data={data}
-                                        keys={keys}
-                                        deleteOption={deleteOption}
-                                        revertOption={revertOption}
-                                        deleteFlag={deleteFlag}
-                                    />{' '} */}
-                                    <Card2
-                                        option={option}
+                                        tab={iconsActive}
                                         data={option === data.key ? data.data : []}
                                         pageNum={pageNum}
                                         setPageNum={setPageNum}
@@ -370,36 +379,28 @@ const Manage = () => {
                                         callbackKeyWord={callbackKeyWord}
                                     />
                                 </MDBTabsPane>
-                                <MDBTabsPane show={iconsActive === 'tab3'}>Tab 3 content</MDBTabsPane>
+                                {option === 'rooms' && (
+                                    <MDBTabsPane show={iconsActive === 'tab3'}>
+                                        <Card
+                                            option={option}
+                                            tab={iconsActive}
+                                            data={option === data.key ? data.data : []}
+                                            pageNum={pageNum}
+                                            setPageNum={setPageNum}
+                                            pageSize={pageSize}
+                                            setPageSize={setPageSize}
+                                            totalElements={totalElements}
+                                            deleteOption={deleteOption}
+                                            revertOption={revertOption}
+                                            deleteFlag={deleteFlag}
+                                            callbackKeyWord={callbackKeyWord}
+                                            setRoomFilter={setRoomFilter}
+                                        />
+                                    </MDBTabsPane>
+                                )}
+                                {/* <MDBTabsPane show={iconsActive === 'tab3'}>Tab 3 content</MDBTabsPane> */}
                             </MDBTabsContent>
                         </>
-                        {/* <div className="col-lg-12">
-                            <div className="room-pagination">
-                                {pageNum !== 1 && (
-                                    <a
-                                        href="#"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setPageNum(pageNum - 1);
-                                        }}
-                                    >
-                                        <i className="fa fa-long-arrow-left" /> Prev
-                                    </a>
-                                )}
-                                <Link to={'/admin/' + option}>{pageNum}</Link>
-                                {pageTotal && pageNum !== pageTotal && (
-                                    <a
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setPageNum(pageNum + 1);
-                                        }}
-                                        href="#"
-                                    >
-                                        Next <i className="fa fa-long-arrow-right" />
-                                    </a>
-                                )}
-                            </div>
-                        </div> */}
                     </div>
                 </div>
             </div>

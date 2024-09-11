@@ -8,6 +8,8 @@ import './room.scss';
 import handleResponse from 'src/utils/handleResponse';
 import Swal from 'sweetalert2';
 
+import { receiveRooomsStatus, socket } from 'src/services/socketio.service';
+
 const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, keyWord, roomCallBack }) => {
     const dispatch = useDispatch();
     const [rooms, setRooms] = useState([]);
@@ -21,7 +23,6 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, keyWord, roomCall
     };
 
     let checkValidTime = (dayStart, dayEnd) => {
-        console.log(new Date(dayStart).getTime() <= Date.now() && new Date(dayEnd).getTime() >= Date.now());
         return new Date(dayStart).getTime() <= Date.now() && new Date(dayEnd).getTime() >= Date.now();
     };
 
@@ -57,6 +58,37 @@ const Rooms = ({ expectedCheckIn, expectedCheckOut, num, type, keyWord, roomCall
         })();
         transferDateTimeToTime(expectedCheckIn);
     }, [expectedCheckIn, expectedCheckOut, num, type, keyWord, pageNum, dispatch]);
+
+    useEffect(() => {
+        receiveRooomsStatus((err, res) => {
+            if (res?.data) {
+                const checkInFilter = new Date(expectedCheckIn);
+                const checkOutFilter = new Date(expectedCheckOut);
+                const updatedRooms = rooms.map((room) => {
+                    const roomData = res.data.find((r) => {
+                        return (
+                            r.roomId === room.id &&
+                            ((new Date(r.checkIn) <= checkInFilter && new Date(r.checkOut) >= checkInFilter) ||
+                                (new Date(r.checkIn) <= checkOutFilter && new Date(r.checkOut) >= checkOutFilter))
+                        );
+                    });
+
+                    if (roomData) {
+                        return {
+                            ...room,
+                            isAvailable: roomData.status === 'CANCEL',
+                        };
+                    }
+                    if (roomData !== null && roomData !== undefined) {
+                        console.log(roomData);
+                        console.log(room);
+                    }
+                    return room;
+                });
+                setRooms(updatedRooms);
+            }
+        });
+    }, [socket]);
 
     return (
         <div>

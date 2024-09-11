@@ -3,7 +3,7 @@ export function useUsers() {
         {
             title: 'Email',
             dataIndex: 'email',
-            width: 200,
+            width: 220,
             fixed: 'left',
         },
         {
@@ -35,11 +35,6 @@ export function useUsers() {
             title: 'Address',
             dataIndex: 'address',
             width: 300,
-        },
-        {
-            title: 'Role name',
-            dataIndex: 'roleName',
-            width: 150,
         },
     ];
 

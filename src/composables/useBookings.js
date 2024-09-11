@@ -1,5 +1,3 @@
-import { isDisabled } from '@testing-library/user-event/dist/utils';
-
 export function useBookings() {
     const bookingTableColumns = [
         {
@@ -12,6 +10,11 @@ export function useBookings() {
             width: 140,
             fixed: 'left',
             render: (text, record) => record.booker?.phoneNumber,
+        },
+        {
+            title: 'Email',
+            width: 220,
+            render: (text, record) => record.booker?.email,
         },
         {
             title: 'Last name',
@@ -48,17 +51,132 @@ export function useBookings() {
         },
         {
             title: 'Total room price',
-            dataIndex: 'totalRoomPrice',
-            width: 120,
+            width: 150,
+            render: (text, record) => {
+                return record?.totalRoomPrice?.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                });
+            },
         },
         {
             title: 'Total service price',
-            dataIndex: 'totalServicePrice',
-            width: 120,
+            width: 150,
+            render: (text, record) => {
+                return record?.totalServicePrice?.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                });
+            },
         },
         {
-            title: 'Status',
-            dataIndex: 'status',
+            title: 'Total Surcharge',
+            width: 120,
+            render: (text, record) => {
+                return record?.totalSurcharge?.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                });
+            },
+        },
+        {
+            title: 'Note',
+            dataIndex: 'note',
+            width: 150,
+        },
+        {
+            title: 'Created date',
+            dataIndex: 'createdDate',
+            width: 200,
+        },
+        {
+            title: 'Last modified date',
+            dataIndex: 'lastModifiedDate',
+            width: 200,
+        },
+    ];
+
+    const bookingUserTableColumns = [
+        {
+            title: 'Booking ID',
+            dataIndex: 'id',
+            fixed: 'left',
+            width: 105,
+        },
+        {
+            title: 'Phone number',
+            width: 140,
+            render: (text, record) => record.booker?.phoneNumber,
+        },
+        {
+            title: 'Email',
+            width: 220,
+            render: (text, record) => record.booker?.email,
+        },
+        {
+            title: 'Last name',
+            width: 150,
+            render: (text, record) => record.booker?.lastName,
+        },
+        {
+            title: 'First name',
+            dataIndex: 'firstName',
+            width: 100,
+            render: (text, record) => record.booker?.firstName,
+        },
+        {
+            title: 'Expected check-in',
+            dataIndex: 'expectedCheckIn',
+            width: 180,
+        },
+        {
+            title: 'Expected check-out',
+            dataIndex: 'expectedCheckOut',
+            width: 180,
+        },
+        {
+            title: 'Check-in',
+            dataIndex: 'checkIn',
+            width: 180,
+        },
+        {
+            title: 'Check-out',
+            dataIndex: 'checkOut',
+            width: 180,
+        },
+        {
+            title: 'Total room price',
+            width: 150,
+            render: (text, record) => {
+                return record?.totalRoomPrice?.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                });
+            },
+        },
+        {
+            title: 'Total service price',
+            width: 150,
+            render: (text, record) => {
+                return record?.totalServicePrice?.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                });
+            },
+        },
+        {
+            title: 'Total Surcharge',
+            width: 120,
+            render: (text, record) => {
+                return record?.totalSurcharge?.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                });
+            },
+        },
+        {
+            title: 'Note',
+            dataIndex: 'note',
             width: 150,
         },
     ];
@@ -132,5 +250,5 @@ export function useBookings() {
         },
     ];
 
-    return { bookingTableColumns, bookingUpdateFields };
+    return { bookingTableColumns, bookingUserTableColumns, bookingUpdateFields };
 }

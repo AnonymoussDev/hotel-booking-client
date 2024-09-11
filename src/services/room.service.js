@@ -8,8 +8,8 @@ class RoomService {
     async getAvailableRooms(options) {
         // console.log(expectedCheckIn, expectedCheckOut, num, type);
         let params = {};
-        if (options.expectedCheckIn) params['checkin'] = options.expectedCheckIn;
-        if (options.expectedCheckOut) params['checkout'] = options.expectedCheckOut;
+        if (options.expectedCheckIn) params['checkIn'] = options.expectedCheckIn;
+        if (options.expectedCheckOut) params['checkOut'] = options.expectedCheckOut;
         if (options.num) params['capacity'] = options.num;
         if (options.type) params['roomType'] = options.type;
         if (options.keyWord) params['keyword'] = options.keyWord;
@@ -42,6 +42,12 @@ class RoomService {
     // admin
     async getRoomsAdmin(options) {
         return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room`, {
+            params: options,
+        });
+    }
+
+    async getRoomAvailablesAdmin(options) {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/available`, {
             params: options,
         });
     }
@@ -83,6 +89,20 @@ class RoomService {
         return await this.httpService.request(
             'POST',
             `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/trash/restore/${roomId}`,
+        );
+    }
+
+    async addSaleToRoom(saleId, roomIds) {
+        return await this.httpService.request('POST', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/add-sale`, {
+            body: { saleId: saleId, roomIds: roomIds },
+        });
+    }
+
+    async removeSaleToRoom(roomIds) {
+        return await this.httpService.request(
+            'POST',
+            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/room/delete-sale`,
+            { body: roomIds },
         );
     }
 }

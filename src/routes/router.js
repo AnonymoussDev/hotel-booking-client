@@ -13,13 +13,13 @@ const publicRoutes = [
     { path: '/', component: Home },
     { path: '/rooms', component: Room },
     { path: '/room-detail/:roomId', component: RoomDetail },
+];
+
+const privateRoutes = [
     { path: '/admin', component: Statistic },
     { path: '/admin/:option', component: Manage },
     { path: '/admin/add/:option', component: AddManage },
     { path: '/admin/update/:option/:optionId', component: UpdateManage },
-];
-
-const privateRoutes = [
     { path: '/booking', component: Booking },
     { path: '/booking-cart', component: BookingCart },
 ];

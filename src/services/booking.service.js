@@ -11,13 +11,23 @@ class BookingService {
         });
     }
 
-    async getBookingsUser() {
-        return await this.httpService.request('GET', `${process.env.REACT_APP_API_CORE_URL}/api/v1/booking`);
+    async getBookingsUser(options) {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_CORE_URL}/api/v1/booking`, {
+            params: options,
+        });
+    }
+
+    async cancelBookingUser(cancelBookingDto) {
+        return await this.httpService.request('POST', `${process.env.REACT_APP_API_CORE_URL}/api/v1/booking/cancel`, {
+            body: cancelBookingDto,
+        });
     }
 
     // admin
-    async getBookingsAdmin() {
-        return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/booking`);
+    async getBookingsAdmin(options) {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/booking`, {
+            params: options,
+        });
     }
     async getBookingDetailAdmin(bookingId) {
         return await this.httpService.request(

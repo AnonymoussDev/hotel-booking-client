@@ -37,7 +37,7 @@ class ProductService {
 
     async updateProductById(productId, productUpdateDto) {
         return await this.httpService.request(
-            'PATCH',
+            'PUT',
             `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product/${productId}`,
             { body: productUpdateDto },
             false,

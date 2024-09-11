@@ -12,9 +12,21 @@ export const fetchCreateBooking = createAsyncThunk('booking', async (createBooki
     }
 });
 
-export const fetchGetBookingsUser = createAsyncThunk('/bookings', async (thunkAPI) => {
+export const fetchGetBookingsUser = createAsyncThunk('/bookings', async (options, thunkAPI) => {
     try {
-        const response = await bookingService.getBookingsUser();
+        const response = await bookingService.getBookingsUser(options);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+});
+
+export const fetchCancelBookingUser = createAsyncThunk('booking', async (cancelBookingDto, thunkAPI) => {
+    try {
+        console.log(cancelBookingDto);
+
+        const response = await bookingService.cancelBookingUser(cancelBookingDto);
         return response.data;
     } catch (err) {
         console.log(err);
@@ -23,9 +35,9 @@ export const fetchGetBookingsUser = createAsyncThunk('/bookings', async (thunkAP
 });
 
 //admin
-export const fetchGetBookingsAdmin = createAsyncThunk('/bookings', async (thunkAPI) => {
+export const fetchGetBookingsAdmin = createAsyncThunk('/bookings', async (options, thunkAPI) => {
     try {
-        const response = await bookingService.getBookingsAdmin();
+        const response = await bookingService.getBookingsAdmin(options);
         return response.data;
     } catch (err) {
         console.log(err);

@@ -81,7 +81,7 @@ const AddUser = () => {
     const addOption = async () => {
         // return;
         let func;
-        if (option == 'rooms') {
+        if (option === 'rooms') {
             if (!data.type) {
                 data.type = 'VIP';
             }
@@ -152,7 +152,7 @@ const AddUser = () => {
     useEffect(() => {
         (async () => {
             if (option === 'products') {
-                const result = await dispatch(fetchGetHotelServicesAdmin({ deleteFlag: false }))
+                await dispatch(fetchGetHotelServicesAdmin({ deleteFlag: false }))
                     .then(unwrapResult)
                     .then((originalPromiseResult) => {
                         if (originalPromiseResult.status.code === '00') {
@@ -176,6 +176,18 @@ const AddUser = () => {
         virtualImg.splice(index, 1);
         console.log(virtualImg);
         setVirtualImg([...virtualImg]);
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // tháng bắt đầu từ 0
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
     return (
@@ -357,7 +369,7 @@ const AddUser = () => {
                                                     type="datetime-local"
                                                     onChange={(e) => {
                                                         setData((prevState) => {
-                                                            prevState['dayStart'] = e.target.value;
+                                                            prevState['dayStart'] = formatDate(e.target.value);
                                                             return prevState;
                                                         });
                                                     }}
@@ -375,7 +387,7 @@ const AddUser = () => {
                                                     type="datetime-local"
                                                     onChange={(e) => {
                                                         setData((prevState) => {
-                                                            prevState['dayEnd'] = e.target.value;
+                                                            prevState['dayEnd'] = formatDate(e.target.value);
                                                             return prevState;
                                                         });
                                                     }}

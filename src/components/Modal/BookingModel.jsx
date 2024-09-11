@@ -1,28 +1,102 @@
 import React from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, Card, Col, Row, Typography, List, Divider } from 'antd';
-import html2canvas from 'html2canvas-pro';
-import { jsPDF } from 'jspdf';
-import './billModal.scss'; // Đảm bảo rằng bạn đã tạo file CSS tùy chỉnh này
+
+import handleResponse from 'src/utils/handleResponse';
+import Swal from 'sweetalert2';
+import { fetchCancelBookingUser } from 'src/stores/bookingSlice/bookingSlice';
 
 import logo from 'src/assets/images/logo.png';
-
 const { Title, Text } = Typography;
 
-const BillDetail = ({ displayModal, handleCloseModel, bookingDetail }) => {
-    const printRef = React.useRef();
+const BookingDetail = ({ displayModal, handleCloseModel, bookingDetail }) => {
+    const dispatch = useDispatch();
 
-    const handleDownloadPdf = async () => {
-        const element = printRef.current;
-
-        const canvas = await html2canvas(element);
-        const data = canvas.toDataURL('image/png');
-
-        const pdf = new jsPDF();
-        const imgProperties = pdf.getImageProperties(data);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-        pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('bill.pdf');
+    const reasonOptions = {
+        0: 'Thay đổi kế hoạch du lịch',
+        1: 'Giá phòng quá cao',
+        2: 'Tìm được phòng ở khách sạn khác',
+        3: 'Thời tiết không thuận lợi',
+        4: 'Không hài lòng với dịch vụ khách sạn',
+        5: 'Nhầm lẫn trong việc đặt phòng',
+        6: 'Phòng không đáp ứng yêu cầu cá nhân',
+        7: 'Lý do sức khỏe',
+        8: 'Sự kiện bị hủy',
+        999: 'Khác',
+    };
+    const cancelBooking = async () => {
+        try {
+            Swal.fire({
+                title: 'What is the reason for your cancellation?',
+                input: 'select',
+                inputOptions: reasonOptions,
+                inputValue: 0,
+                showCancelButton: true,
+                confirmButtonText: 'Enter',
+                showLoaderOnConfirm: true,
+                preConfirm: (selectedReason) => {
+                    return selectedReason;
+                },
+            }).then(async (resultSelect) => {
+                if (resultSelect.isConfirmed) {
+                    if (resultSelect.value === '999') {
+                        await Swal.fire({
+                            title: 'What is the reason for your cancellation?',
+                            input: 'text',
+                            inputPlaceholder: 'Please enter your reason',
+                            inputAttributes: {
+                                autocapitalize: 'off',
+                            },
+                            showCancelButton: true,
+                            confirmButtonText: 'Enter',
+                            showLoaderOnConfirm: true,
+                            preConfirm: (customeReason) => {
+                                return customeReason;
+                            },
+                        }).then(async (resultInput) => {
+                            if (resultInput.isConfirmed) {
+                                return await dispatch(
+                                    fetchCancelBookingUser({ bookingId: bookingDetail.id, note: resultInput.value }),
+                                )
+                                    .then(unwrapResult)
+                                    .then((result) => {
+                                        console.log(result);
+                                        if (handleResponse(result)) {
+                                            return;
+                                        }
+                                        Swal.fire('Cancel booking successfully', '', 'success');
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 1000);
+                                    });
+                            }
+                        });
+                    } else {
+                        return await dispatch(
+                            fetchCancelBookingUser({
+                                bookingId: bookingDetail.id,
+                                note: reasonOptions[resultSelect.value],
+                            }),
+                        )
+                            .then(unwrapResult)
+                            .then((result) => {
+                                console.log(result);
+                                if (handleResponse(result)) {
+                                    return;
+                                }
+                                Swal.fire('Cancel booking successfully', '', 'success');
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+                            });
+                    }
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            Swal.fire('Có lỗi xảy ra', '', 'error');
+        }
     };
 
     return (
@@ -31,26 +105,30 @@ const BillDetail = ({ displayModal, handleCloseModel, bookingDetail }) => {
             onCancel={handleCloseModel}
             footer={
                 <>
-                    <Button onClick={handleCloseModel} style={{ marginRight: 8 }}>
-                        Cancel
+                    <Button
+                        onClick={cancelBooking}
+                        type="primary"
+                        style={{ marginRight: 8, backgroundColor: 'rgb(238, 77, 45)' }}
+                    >
+                        Cancel Booking
                     </Button>
                     <Button
+                        onClick={handleCloseModel}
+                        style={{ marginRight: 8, backgroundColor: '#5892b5', borderColor: '#5892b5' }}
                         type="primary"
-                        style={{ backgroundColor: '#4CAF50', borderColor: '#4CAF50' }}
-                        onClick={handleDownloadPdf}
                     >
-                        Download Invoice
+                        Ok
                     </Button>
                 </>
             }
             width={600}
         >
-            <Card ref={printRef} className="bill-card">
-                <div className="bill-header">
+            <Card className="booking-card">
+                <div className="booking-header">
                     <img src={logo} alt="Logo" style={{ display: 'flex', height: '60px' }} />
                     <div className="title">
                         <Title level={3} style={{ textAlign: 'center' }}>
-                            Payment invoice
+                            Your Reservation
                         </Title>
                     </div>
                 </div>
@@ -58,7 +136,7 @@ const BillDetail = ({ displayModal, handleCloseModel, bookingDetail }) => {
 
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Text strong>Bill ID:</Text>
+                        <Text strong>Booking ID:</Text>
                         <span> {bookingDetail?.id}</span>
                     </Col>
                     <Col span={12}>
@@ -211,4 +289,4 @@ const BillDetail = ({ displayModal, handleCloseModel, bookingDetail }) => {
     );
 };
 
-export default BillDetail;
+export default BookingDetail;

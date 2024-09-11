@@ -42,26 +42,6 @@ export const fetchCreateSale = createAsyncThunk('room', async (createSaleDto, th
     }
 });
 
-export const fetchAddSaleToRoom = createAsyncThunk('room', async ({ saleId, roomIds }, thunkAPI) => {
-    try {
-        const response = await saleService.AddSaleToRoom(saleId, roomIds);
-        return response.data;
-    } catch (err) {
-        console.log(err);
-        return err.response.data;
-    }
-});
-
-export const fetchRemoveSaleToRoom = createAsyncThunk('room', async ({ roomIds }, thunkAPI) => {
-    try {
-        const response = await saleService.removeSaleToRoom(roomIds);
-        return response.data;
-    } catch (err) {
-        console.log(err);
-        return err.response.data;
-    }
-});
-
 export const fetchUpdateSale = createAsyncThunk('sale', async ({ saleId, updateSaleDto }, thunkAPI) => {
     try {
         const response = await saleService.updateSaleById(saleId, updateSaleDto);

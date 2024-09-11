@@ -1,58 +1,211 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import logo from 'src/assets/images/logo.png';
-import avatar from 'src/assets/images/avt-preview.png';
-import logout from 'src/assets/images/admin/log-out.png';
-import { Link } from 'react-router-dom';
-import storageService from '../services/storage.service';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 
-import { Menu, Dropdown, Badge, Button, Avatar, Layout } from 'antd';
-import { BellOutlined, UserOutlined } from '@ant-design/icons';
+import storageService from 'src/services/storage.service';
+import { receiveNotification, socket } from 'src/services/socketio.service';
+
+import { fetchGetNotificationsAdmin, fetchReadNotificationAdmin } from 'src/stores/notificationSlice/notificationSlice';
+import handleResponse from 'src/utils/handleResponse';
+import Swal from 'sweetalert2';
+
+import logo from 'src/assets/images/logo.png';
+
+import { Menu, Dropdown, Badge, Button, Avatar, Layout, Card, Typography, Space } from 'antd';
+import {
+    BellOutlined,
+    UserOutlined,
+    SettingOutlined,
+    LogoutOutlined,
+    MessageOutlined,
+    ClockCircleOutlined,
+    AlertOutlined,
+} from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 const { Header } = Layout;
+const { Text } = Typography;
+
+const menuItems = [
+    {
+        key: '1',
+        icon: <UserOutlined />,
+        label: 'My Profile',
+    },
+    {
+        key: '2',
+        icon: <SettingOutlined />,
+        label: 'Setting',
+    },
+    {
+        key: '3',
+        icon: <LogoutOutlined />,
+        label: 'Logout',
+        onClick: () => {
+            storageService.remove('token');
+            window.location.href = '/login';
+        },
+    },
+];
+
+const getIconForNotification = (title) => {
+    if (title.toLowerCase().includes('message')) return <MessageOutlined style={{ color: '#1890ff' }} />;
+    if (title.toLowerCase().includes('meeting')) return <ClockCircleOutlined style={{ color: '#52c41a' }} />;
+    if (title.toLowerCase().includes('server')) return <AlertOutlined style={{ color: '#ff4d4f' }} />;
+    return <UserOutlined style={{ color: '#fa8c16' }} />;
+};
 
 const AdminHeader = () => {
-    const [isBlock, setIsBlock] = useState(false);
+    const dispatch = useDispatch();
     const user = useSelector((state) => state.auth?.user);
 
-    const [count, setCount] = useState(5); // Số lượng thông báo giả lập
-    const [notifications, setNotifications] = useState([
-        'New message from John',
-        'Meeting at 10:00 AM',
-        'Server down!',
-        'New comment on your post',
-        'Your password will expire soon',
-    ]);
+    const [pageNotification, setPageNotification] = useState(1);
+    const [pageTotalNotification, setPageTotalNotification] = useState();
+    const [countNotification, setCountNotification] = useState(0);
+    const [notifications, setNotifications] = useState([]);
+    const [dropdownNotificationVisible, setDropdownNotificationVisible] = useState(false);
 
-    const handleClearNotifications = () => {
-        setCount(0);
-        setNotifications([]);
+    const fetchNotifications = useCallback(async () => {
+        try {
+            const result = await dispatch(fetchGetNotificationsAdmin({ pageNum: pageNotification }));
+            const response = unwrapResult(result);
+
+            if (handleResponse(response)) {
+                return;
+            }
+
+            setNotifications((prev) => [...prev, ...response.data.items]);
+            setPageTotalNotification(response.data.meta.totalPages);
+            setCountNotification(response.data.totalUnreadNotifications);
+        } catch (error) {
+            console.error('Fetch get notifications error: ', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Đã có lỗi xảy ra. Lấy thông báo thất bại!',
+            });
+        }
+    }, [dispatch, pageNotification]);
+
+    const fetchReadNotification = async (id) => {
+        try {
+            setDropdownNotificationVisible(false);
+            const result = await dispatch(fetchReadNotificationAdmin(id));
+            const response = unwrapResult(result);
+            if (handleResponse(response)) {
+                return;
+            }
+            setNotifications((prevNotifications) =>
+                prevNotifications.map((notification) =>
+                    notification.id === id ? { ...notification, isRead: true } : notification,
+                ),
+            );
+            setCountNotification((prevCount) => (prevCount > 1 ? prevCount - 1 : prevCount));
+        } catch (error) {
+            console.error('Fetch read notifications error: ', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Đã có lỗi xảy ra. thông báo thất bại!',
+            });
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+    }, [fetchNotifications]);
+
+    useEffect(() => {
+        receiveNotification((err, res) => {
+            if (res?.data) {
+                setNotifications((prev) => [res.data, ...prev]);
+                setCountNotification((prevCount) => prevCount + 1);
+            }
+        });
+    }, [socket]);
+
+    const handleScroll = (event) => {
+        const { scrollTop, clientHeight, scrollHeight } = event.target;
+        if (scrollHeight - Math.floor(scrollTop) === clientHeight && pageNotification < pageTotalNotification) {
+            setPageNotification((prev) => prev + 1);
+        }
     };
 
     const notify = (
-        <Menu>
+        <Menu
+            style={{
+                maxHeight: '80vh', // Độ dài tối đa dựa trên chiều cao màn hình
+                overflowY: 'auto', // Cho phép cuộn dọc
+                width: '350px', // Đặt chiều rộng cố định nếu cần
+            }}
+            onScroll={handleScroll}
+        >
             {notifications.length > 0 ? (
-                notifications.map((notification, index) => <Menu.Item key={index}>{notification}</Menu.Item>)
+                notifications.map((notification, index) => (
+                    <Menu.Item key={index} style={{ padding: '10px 10px' }}>
+                        <Card
+                            bordered={false}
+                            style={{ width: '100%' }}
+                            styles={{
+                                body: { padding: '15px', backgroundColor: notification.isRead ? '#f5f5f5' : '#e6f7ff' },
+                            }}
+                            onClick={(e) => fetchReadNotification(notification.id)}
+                        >
+                            {notification.link !== null && (
+                                <Link to={notification.link}>
+                                    <Card.Meta
+                                        avatar={getIconForNotification(notification.title)}
+                                        title={notification.title}
+                                        description={
+                                            <Space direction="vertical" size={1}>
+                                                <Text
+                                                    style={{
+                                                        whiteSpace: 'normal',
+                                                        wordWrap: 'break-word',
+                                                        overflowWrap: 'break-word',
+                                                        wordBreak: 'break-word',
+                                                        userSelect: 'text',
+                                                    }}
+                                                >
+                                                    {notification.content}
+                                                </Text>
+                                                <Text type="secondary">
+                                                    {new Date(notification.createdDate).toLocaleString()}
+                                                </Text>
+                                            </Space>
+                                        }
+                                    />
+                                </Link>
+                            )}
+                            {notification.link === null && (
+                                <Card.Meta
+                                    avatar={getIconForNotification(notification.title)}
+                                    title={notification.title}
+                                    description={
+                                        <Space direction="vertical" size={1}>
+                                            <Text
+                                                style={{
+                                                    whiteSpace: 'normal',
+                                                    wordWrap: 'break-word',
+                                                    overflowWrap: 'break-word',
+                                                    wordBreak: 'break-word',
+                                                    userSelect: 'text',
+                                                }}
+                                            >
+                                                {notification.content}
+                                            </Text>
+                                            <Text type="secondary">
+                                                {new Date(notification.createdDate).toLocaleString()}
+                                            </Text>
+                                        </Space>
+                                    }
+                                />
+                            )}
+                        </Card>
+                    </Menu.Item>
+                ))
             ) : (
                 <Menu.Item>No new notifications</Menu.Item>
             )}
-            <Menu.Divider />
-            <Menu.Item onClick={handleClearNotifications}>Clear All</Menu.Item>
-        </Menu>
-    );
-
-    const menu = (
-        <Menu>
-            <Menu.Item key="1">My Profile</Menu.Item>
-            <Menu.Item key="2">Setting</Menu.Item>
-            <Menu.Item
-                key="3"
-                onClick={() => {
-                    storageService.remove('token');
-                    window.location.href = '/login';
-                }}
-            >
-                Logout
-            </Menu.Item>
         </Menu>
     );
 
@@ -74,96 +227,22 @@ const AdminHeader = () => {
                 <img src={logo} alt="Logo" style={{ display: 'flex', height: '60px' }} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <Dropdown overlay={notify} trigger={['click']} placement="bottomRight">
-                    <Badge count={count}>
+                <Dropdown
+                    overlay={notify}
+                    visible={dropdownNotificationVisible}
+                    onVisibleChange={() => setDropdownNotificationVisible(true)}
+                    trigger={['click']}
+                    placement="bottomRight"
+                >
+                    <Badge count={countNotification}>
                         <Button shape="circle" icon={<BellOutlined />} />
                     </Badge>
                 </Dropdown>
-                <Dropdown overlay={menu} trigger={['click']}>
+                <Dropdown menu={{ items: menuItems }} trigger={['click']}>
                     <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
                 </Dropdown>
             </div>
         </Header>
-        // <div className="header" style={{ backgroundColor: '#F8F9FE' }}>
-        //     <div className="header-left active" style={{ top: '30px' }}>
-        //         <Link className="logo" to="/">
-        //             <img src={logo} alt="" />
-        //         </Link>
-        //         <Link className="logo-small" to="/">
-        //             <img src={logo} alt="" />
-        //         </Link>
-        //     </div>
-        //     <a id="mobile_btn" className="mobile_btn" href="#sidebar">
-        //         <span className="bar-icon">
-        //             <span />
-        //             <span />
-        //             <span />
-        //         </span>
-        //     </a>
-        //     <ul className="nav user-menu" onClick={() => setIsBlock(!isBlock)}>
-        //         <li style={{ display: 'flex', alignItems: 'center' }}>
-        //             <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-        //                 <Badge count={count}>
-        //                     <Button shape="circle" icon={<BellOutlined />} />
-        //                 </Badge>
-        //             </Dropdown>
-        //         </li>
-        //         <li className="nav-item dropdown has-arrow main-drop">
-        //             <a
-        //                 // href="javascript:void(0);"
-        //                 className="dropdown-toggle nav-link userset"
-        //                 data-bs-toggle="dropdown"
-        //             >
-        //                 <span className="user-img">
-        //                     <img src={user && user?.avatar ? avatar : user.avatar} alt="" />
-        //                     <span className="status online" />
-        //                 </span>
-        //             </a>
-        //             <div
-        //                 style={{
-        //                     display: isBlock === true ? 'block' : 'none',
-        //                     top: '-70%',
-        //                     left: '-100%',
-        //                 }}
-        //                 className="dropdown-menu menu-drop-user"
-        //             >
-        //                 <div className="profilename">
-        //                     <div className="profileset">
-        //                         <span className="user-img">
-        //                             <img src={user && user.avatar} alt="" />
-        //                             <span className="status online" />
-        //                         </span>
-        //                         <div className="profilesets">
-        //                             <h6>{user?.firstName?.concat(' ' + user?.lastName)}</h6>
-        //                             <h5>Admin</h5>
-        //                         </div>
-        //                     </div>
-        //                     <hr className="m-0" />
-        //                     <Link to="/user" className="dropdown-item">
-        //                         <i className="me-2" data-feather="user" />
-        //                         My Profile
-        //                     </Link>
-        //                     <a className="dropdown-item" href="generalsettings.html">
-        //                         <i className="me-2" data-feather="settings" />
-        //                         Settings
-        //                     </a>
-        //                     <hr className="m-0" />
-        //                     <div
-        //                         className="dropdown-item logout pb-0"
-        //                         style={{ cursor: 'pointer' }}
-        //                         onClick={() => {
-        //                             storageService.remove('token');
-        //                             window.location.href = '/login';
-        //                         }}
-        //                     >
-        //                         <img src={logout} className="me-2" alt="img" />
-        //                         Logout
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //         </li>
-        //     </ul>
-        // </div>
     );
 };
 

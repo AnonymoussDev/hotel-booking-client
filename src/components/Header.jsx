@@ -9,8 +9,6 @@ const Header = () => {
     const location = useLocation();
     const pathName = location.pathname;
     const user = useSelector((state) => state.auth?.user);
-    console.log(user);
-
     const token = storageService.get('token');
 
     return (

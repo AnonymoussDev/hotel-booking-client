@@ -21,6 +21,10 @@ class StorageService {
         this.localStorage.setItem(this.generateKey('token'), token);
     }
 
+    removeAccessToken() {
+        this.localStorage.removeItem(this.generateKey('token'));
+    }
+
     remove(key) {
         this.localStorage.removeItem(this.generateKey(key));
     }

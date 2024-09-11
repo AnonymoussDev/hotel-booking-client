@@ -92,7 +92,7 @@ const Reservation = ({ expectedCheckIn, expectedCheckOut, rooms, reservation, se
 
     return (
         <section style={{ padding: '12px', marginTop: '36px' }} className="card">
-            <h2 className="mb-4">Reservation Summary</h2>
+            <h4 className="mb-4">Reservation Summary</h4>
             <div className="d-flex justify-content-between">
                 {/* <h3>{room.name}</h3> */}
                 {/* <SelectList name="rooms" start={1} /> */}
