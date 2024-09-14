@@ -45,13 +45,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md}\" --config ./.prettierrc",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md}\" --config ./.prettierrc"
   },
   "husky": {
     "hooks": {
