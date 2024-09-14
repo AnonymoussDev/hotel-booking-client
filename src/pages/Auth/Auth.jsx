@@ -146,7 +146,7 @@ const Login = () => {
                     confirmButtonText: 'OK',
                     showCancelButton: false,
                 }).then((result) => {
-                    window.location.href = '/login';
+                    navigate('/login');
                 });
             } else if (result.isConfirmed && result.value.status.code !== '00') {
                 Swal.fire({

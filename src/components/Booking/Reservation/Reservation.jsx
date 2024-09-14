@@ -1,5 +1,6 @@
 import { unwrapResult } from '@reduxjs/toolkit';
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchCreateBooking } from 'src/stores/bookingSlice/bookingSlice';
@@ -8,11 +9,13 @@ import handleResponse from 'src/utils/handleResponse';
 // import socket from "../../socket";
 
 const Reservation = ({ expectedCheckIn, expectedCheckOut, rooms, reservation, services, step }) => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [price, setPrice] = useState(0);
     const [roomsBooking, setRoomsBooking] = useState({});
     const [servicesBooking, setServicesBooking] = useState({});
     const [discountPrice, setDiscountPrice] = useState(0);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         console.log('add room', rooms);
@@ -224,7 +227,7 @@ const Reservation = ({ expectedCheckIn, expectedCheckOut, rooms, reservation, se
                                 }
                                 Swal.fire('Đặt phòng thành công', '', 'success');
                                 setTimeout(() => {
-                                    window.location.href = '/booking-cart';
+                                    navigate('/booking-cart');
                                 }, 1500);
                                 reservation(step + 1);
                             })

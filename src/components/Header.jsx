@@ -1,11 +1,12 @@
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import storageService from 'src/services/storage.service';
 import logo from 'src/assets/images/logo.png';
 import avtPreview from 'src/assets/images/avt-preview.png';
 
 const Header = () => {
+    const navigate = useNavigate();
     const location = useLocation();
     const pathName = location.pathname;
     const user = useSelector((state) => state.auth?.user);
@@ -69,7 +70,7 @@ const Header = () => {
                                                     <li
                                                         onClick={() => {
                                                             storageService.remove('token');
-                                                            window.location.href = '/login';
+                                                            navigate('/login');
                                                         }}
                                                         style={{ padding: '8px' }}
                                                     >

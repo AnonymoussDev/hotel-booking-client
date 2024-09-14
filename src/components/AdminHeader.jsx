@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { useNavigate } from 'react-router-dom';
 
 import storageService from 'src/services/storage.service';
 import { receiveNotification, socket } from 'src/services/socketio.service';
@@ -25,28 +26,6 @@ import { Link } from 'react-router-dom';
 const { Header } = Layout;
 const { Text } = Typography;
 
-const menuItems = [
-    {
-        key: '1',
-        icon: <UserOutlined />,
-        label: 'My Profile',
-    },
-    {
-        key: '2',
-        icon: <SettingOutlined />,
-        label: 'Setting',
-    },
-    {
-        key: '3',
-        icon: <LogoutOutlined />,
-        label: 'Logout',
-        onClick: () => {
-            storageService.remove('token');
-            window.location.href = '/login';
-        },
-    },
-];
-
 const getIconForNotification = (title) => {
     if (title.toLowerCase().includes('message')) return <MessageOutlined style={{ color: '#1890ff' }} />;
     if (title.toLowerCase().includes('meeting')) return <ClockCircleOutlined style={{ color: '#52c41a' }} />;
@@ -55,6 +34,7 @@ const getIconForNotification = (title) => {
 };
 
 const AdminHeader = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth?.user);
 
@@ -129,6 +109,28 @@ const AdminHeader = () => {
             setPageNotification((prev) => prev + 1);
         }
     };
+
+    const menuItems = [
+        {
+            key: '1',
+            icon: <UserOutlined />,
+            label: 'My Profile',
+        },
+        {
+            key: '2',
+            icon: <SettingOutlined />,
+            label: 'Setting',
+        },
+        {
+            key: '3',
+            icon: <LogoutOutlined />,
+            label: 'Logout',
+            onClick: () => {
+                storageService.removeAccessToken('token');
+                navigate('/login');
+            },
+        },
+    ];
 
     const notify = (
         <Menu
