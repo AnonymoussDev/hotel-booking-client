@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 import slider1 from 'src/assets/images/hero/hero-1.jpg';
 import slider2 from 'src/assets/images/hero/hero-2.jpg';
@@ -15,10 +16,12 @@ import storageService from 'src/services/storage.service';
 import handleResponse from 'src/utils/handleResponse';
 
 const Login = () => {
+    const navigate = useNavigate();
+    const { handleSubmit } = useForm();
+
     const [isBounceActive, setIsBounceActive] = useState(false);
     const [isHidePassword, setIsHidePassword] = useState(true);
 
-    const { handleSubmit } = useForm();
     const [emailOrPhone, setEmailOrPhone] = useState('huydoanx305@gmail.com');
     const [password, setPassword] = useState('admin');
     const [newEmail, setNewEmail] = useState('');
@@ -58,10 +61,9 @@ const Login = () => {
                 });
                 storageService.setAccessToken(token);
                 if (index === -1) {
-                    console.log(index);
-                    window.location.href = '/';
+                    navigate('/'); // Điều hướng đến trang chính
                 } else {
-                    window.location.href = '/admin';
+                    navigate('/admin'); // Điều hướng đến trang admin
                 }
             })
             .catch((error) => {
