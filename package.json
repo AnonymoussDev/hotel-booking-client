@@ -2,7 +2,7 @@
   "name": "hotel-booking-client",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://huydoanx305.github.io/hotel-booking-client/",
+  "homepage": "https://AnonymoussDev.github.io/hotel-booking-client/",
   "dependencies": {
     "@ant-design/charts": "^2.2.1",
     "@reduxjs/toolkit": "^1.9.3",
