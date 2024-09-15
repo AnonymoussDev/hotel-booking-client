@@ -25,8 +25,8 @@ const Statistic = () => {
                     await (
                         await fetch(
                             `${
-                                process.env.REACT_APP_API_ADMIN_URL
-                            }/api/v1/statistic/revenue?fromMonth=1&toMonth=12&year=${new Date().getFullYear()}`,
+                                process.env.REACT_APP_API_URL
+                            }/hotel-admin/api/v1/statistic/revenue?fromMonth=1&toMonth=12&year=${new Date().getFullYear()}`,
                             {
                                 headers: {
                                     ...(token && { Authorization: `Bearer ${token}` }),
@@ -35,7 +35,7 @@ const Statistic = () => {
                         )
                     ).json(),
                     await (
-                        await fetch(`${process.env.REACT_APP_API_ADMIN_URL}/api/v1/statistic/top-booking`, {
+                        await fetch(`${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/statistic/top-booking`, {
                             headers: {
                                 ...(token && { Authorization: `Bearer ${token}` }),
                             },
@@ -44,8 +44,8 @@ const Statistic = () => {
                     await (
                         await fetch(
                             `${
-                                process.env.REACT_APP_API_ADMIN_URL
-                            }/api/v1/statistic/room-booked-month?month=${monthBar}&year=${new Date().getFullYear()}`,
+                                process.env.REACT_APP_API_URL
+                            }/hotel-admin/api/v1/statistic/room-booked-month?month=${monthBar}&year=${new Date().getFullYear()}`,
                             {
                                 headers: {
                                     ...(token && { Authorization: `Bearer ${token}` }),

@@ -6,14 +6,14 @@ class HotelServiceService {
     }
 
     async getServices(options) {
-        return await this.httpService.request('GET', `${process.env.REACT_APP_API_CORE_URL}/api/v1/service`, {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_URL}/hotel-core/api/v1/service`, {
             params: options,
         });
     }
 
     // admin
     async getServicesAdmin(options) {
-        return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/service`, {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/service`, {
             params: options,
         });
     }
@@ -21,14 +21,14 @@ class HotelServiceService {
     async getServiceAdmin(serviceId) {
         return await this.httpService.request(
             'GET',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/service/${serviceId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/service/${serviceId}`,
         );
     }
 
     async updateServiceById(serviceId, updateServiceDto) {
         return await this.httpService.request(
             'PUT',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/service/${serviceId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/service/${serviceId}`,
             { body: updateServiceDto },
             false,
         );

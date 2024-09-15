@@ -7,15 +7,19 @@ class NotificationService {
 
     //admin
     async getNotificationAdmin(options) {
-        return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/notification`, {
-            params: options,
-        });
+        return await this.httpService.request(
+            'GET',
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/notification`,
+            {
+                params: options,
+            },
+        );
     }
 
     async readNotificationAdmin(id) {
         return await this.httpService.request(
             'POST',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/notification/read/${id}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/notification/read/${id}`,
         );
     }
 }

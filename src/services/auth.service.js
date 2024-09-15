@@ -7,7 +7,7 @@ class AuthService {
 
     async login(authCredential) {
         console.log(authCredential);
-        return await this.httpService.request('POST', `${process.env.REACT_APP_API_AUTH_URL}/api/v1/auth/login`, {
+        return await this.httpService.request('POST', `${process.env.REACT_APP_API_URL}/hotel-auth/api/v1/auth/login`, {
             body: authCredential,
         });
     }
@@ -15,7 +15,7 @@ class AuthService {
     async register(authCredential) {
         return await this.httpService.request(
             'POST',
-            `${process.env.REACT_APP_API_AUTH_URL}/api/v1/auth/signup`,
+            `${process.env.RREACT_APP_API_URL}/hotel-auth/api/v1/auth/signup`,
             { body: authCredential },
             false,
         );
@@ -24,7 +24,7 @@ class AuthService {
     async verifyRegister(email, token) {
         return await this.httpService.request(
             'POST',
-            `${process.env.REACT_APP_API_AUTH_URL}/api/v1/auth/signup/verify`,
+            `${process.env.REACT_APP_API_URL}/hotel-auth/api/v1/auth/signup/verify`,
             {
                 params: {
                     email: email,
@@ -36,7 +36,7 @@ class AuthService {
     }
 
     async getCurrentUser() {
-        return await this.httpService.request('GET', `${process.env.REACT_APP_API_AUTH_URL}/api/v1/auth/me`);
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_URL}/hotel-auth/api/v1/auth/me`);
     }
 }
 

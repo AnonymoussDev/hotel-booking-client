@@ -8,13 +8,13 @@ class ProductService {
     async getProductsByServices(serviceId) {
         return await this.httpService.request(
             'GET',
-            `${process.env.REACT_APP_API_CORE_URL}/api/v1/product/service/${serviceId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-core/api/v1/product/service/${serviceId}`,
         );
     }
 
     //admin
     async getProductsAdmin(options) {
-        return await this.httpService.request('GET', `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product`, {
+        return await this.httpService.request('GET', `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/product`, {
             params: options,
         });
     }
@@ -22,14 +22,14 @@ class ProductService {
     async getProductAdmin(productId) {
         return await this.httpService.request(
             'GET',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product/${productId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/product/${productId}`,
         );
     }
 
     async createProduct(productCreateDto) {
         return await this.httpService.request(
             'POST',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/product`,
             { body: productCreateDto },
             false,
         );
@@ -38,7 +38,7 @@ class ProductService {
     async updateProductById(productId, productUpdateDto) {
         return await this.httpService.request(
             'PUT',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product/${productId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/product/${productId}`,
             { body: productUpdateDto },
             false,
         );
@@ -47,21 +47,21 @@ class ProductService {
     async deleteProductById(productId) {
         return await this.httpService.request(
             'DELETE',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product/${productId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/product/${productId}`,
         );
     }
 
     async revertProductById(productId) {
         return await this.httpService.request(
             'POST',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product/trash/restore/${productId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/product/trash/restore/${productId}`,
         );
     }
 
     async deletePermanentlyProductById(productId) {
         return await this.httpService.request(
             'DELETE',
-            `${process.env.REACT_APP_API_ADMIN_URL}/api/v1/product/trash/delete/${productId}`,
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/product/trash/delete/${productId}`,
         );
     }
 }
