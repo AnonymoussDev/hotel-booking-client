@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/hotel-booking-client/static/css/main.a2d0049d.css",
-    "main.js": "/hotel-booking-client/static/js/main.841042ee.js",
+    "main.js": "/hotel-booking-client/static/js/main.5b3c64f2.js",
     "static/js/239.5a6bb5ee.chunk.js": "/hotel-booking-client/static/js/239.5a6bb5ee.chunk.js",
     "static/js/213.f4301524.chunk.js": "/hotel-booking-client/static/js/213.f4301524.chunk.js",
     "static/js/667.db0cdfd1.chunk.js": "/hotel-booking-client/static/js/667.db0cdfd1.chunk.js",
@@ -26,7 +26,7 @@
     "static/media/checkout.png": "/hotel-booking-client/static/media/checkout.c821aa6e8d08170b27ea.png",
     "index.html": "/hotel-booking-client/index.html",
     "main.a2d0049d.css.map": "/hotel-booking-client/static/css/main.a2d0049d.css.map",
-    "main.841042ee.js.map": "/hotel-booking-client/static/js/main.841042ee.js.map",
+    "main.5b3c64f2.js.map": "/hotel-booking-client/static/js/main.5b3c64f2.js.map",
     "239.5a6bb5ee.chunk.js.map": "/hotel-booking-client/static/js/239.5a6bb5ee.chunk.js.map",
     "213.f4301524.chunk.js.map": "/hotel-booking-client/static/js/213.f4301524.chunk.js.map",
     "667.db0cdfd1.chunk.js.map": "/hotel-booking-client/static/js/667.db0cdfd1.chunk.js.map",
@@ -34,6 +34,6 @@
   },
   "entrypoints": [
     "static/css/main.a2d0049d.css",
-    "static/js/main.841042ee.js"
+    "static/js/main.5b3c64f2.js"
   ]
 }
