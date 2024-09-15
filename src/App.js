@@ -5,7 +5,6 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import handleResponse from 'src/utils/handleResponse';
 import { fetchGetCurrentUser, setUser } from 'src/stores/authSlice/authSlice';
-import Swal from 'sweetalert2';
 import { initiateSocketConnection, disconnectSocket } from './services/socketio.service';
 
 function App() {
@@ -22,26 +21,12 @@ function App() {
                         return;
                     }
                     dispatch(setUser(result.data));
-                } catch (err) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Đã có lỗi xảy ra. Xin vui lòng thử lại sau!',
-                    });
-                }
+                } catch (err) {}
 
                 try {
-                    // Initiate socket connection
                     await initiateSocketConnection(token);
                     console.log('Socket connected successfully.');
-                } catch (err) {
-                    console.log(err);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Đã có lỗi xảy ra. Xin vui lòng thử lại sau!',
-                    });
-                }
+                } catch (err) {}
             }
         };
 

@@ -96,6 +96,10 @@ const AdminHeader = () => {
 
     useEffect(() => {
         receiveNotification((err, res) => {
+            if (err) {
+                console.error('Socket error:', err);
+                return;
+            }
             if (res?.data) {
                 setNotifications((prev) => [res.data, ...prev]);
                 setCountNotification((prevCount) => prevCount + 1);
@@ -178,7 +182,7 @@ const AdminHeader = () => {
                                     />
                                 </Link>
                             )}
-                            {notification.link === null && (
+                            {notification.path === null && (
                                 <Card.Meta
                                     avatar={getIconForNotification(notification.title)}
                                     title={notification.title}
@@ -231,8 +235,8 @@ const AdminHeader = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                 <Dropdown
                     overlay={notify}
-                    visible={dropdownNotificationVisible}
-                    onVisibleChange={() => setDropdownNotificationVisible(!dropdownNotificationVisible)}
+                    open={dropdownNotificationVisible}
+                    onOpenChange={() => setDropdownNotificationVisible(!dropdownNotificationVisible)}
                     trigger={['click']}
                     placement="bottomRight"
                 >
