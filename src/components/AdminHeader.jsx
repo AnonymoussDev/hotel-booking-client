@@ -152,8 +152,8 @@ const AdminHeader = () => {
                             }}
                             onClick={(e) => fetchReadNotification(notification.id)}
                         >
-                            {notification.link !== null && (
-                                <Link to={notification.link}>
+                            {notification.path !== null && (
+                                <Link to={notification.path}>
                                     <Card.Meta
                                         avatar={getIconForNotification(notification.title)}
                                         title={notification.title}
@@ -232,7 +232,7 @@ const AdminHeader = () => {
                 <Dropdown
                     overlay={notify}
                     visible={dropdownNotificationVisible}
-                    onVisibleChange={() => setDropdownNotificationVisible(true)}
+                    onVisibleChange={() => setDropdownNotificationVisible(!dropdownNotificationVisible)}
                     trigger={['click']}
                     placement="bottomRight"
                 >
