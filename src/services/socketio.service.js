@@ -33,20 +33,9 @@ export const disconnectSocket = () => {
     }
 };
 
-//send room to join
-const joinRoom = (roomId) => {
-    if (socket) {
-        console.log('Joining room:', roomId);
-        socket.emit('join_room', roomId);
-    } else {
-        console.warn('Socket is not connected.');
-    }
-};
-
 // receive notify
 export const receiveNotification = (callback) => {
     if (socket) {
-        joinRoom('admin');
         socket.on('notification', (res) => {
             console.log(res);
             return callback(null, res);
@@ -57,7 +46,6 @@ export const receiveNotification = (callback) => {
 // receive notify
 export const receiveRooomsStatus = (callback) => {
     if (socket) {
-        joinRoom('client');
         socket.on('rooms_status', (res) => {
             console.log(res);
             return callback(null, res);

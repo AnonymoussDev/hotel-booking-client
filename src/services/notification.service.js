@@ -22,6 +22,13 @@ class NotificationService {
             `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/notification/read/${id}`,
         );
     }
+
+    async readAllNotificationAdmin(id) {
+        return await this.httpService.request(
+            'POST',
+            `${process.env.REACT_APP_API_URL}/hotel-admin/api/v1/notification/read-all`,
+        );
+    }
 }
 
 export default NotificationService;

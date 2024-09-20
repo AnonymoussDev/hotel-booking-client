@@ -7,5 +7,4 @@ export default {
     gender: '',
     birthday: '',
     address: '',
-    roleName: '',
 };

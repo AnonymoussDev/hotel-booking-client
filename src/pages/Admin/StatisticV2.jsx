@@ -12,7 +12,7 @@ import {
     Legend,
 } from 'chart.js';
 import { Line, Pie, Bar } from 'react-chartjs-2';
-import { Card, Row, Select } from 'antd';
+import { Card, Row, Select, Progress } from 'antd';
 
 import AdminHeader from 'src/components/AdminHeader';
 import AdminSIdeBar from 'src/components/AdminSideBar';
@@ -29,6 +29,7 @@ const Statistic = () => {
     const [barData, setBarData] = useState(null);
     const [monthBar, setMonthBar] = useState('8');
     const [userTopBooking, setUserTopBooking] = useState(null);
+    const [totalBookingStatus, setTotalBookingStatus] = useState(null);
 
     useMemo(() => {
         console.log(monthBar);
@@ -59,6 +60,18 @@ const Statistic = () => {
                             `${
                                 process.env.REACT_APP_API_URL
                             }/hotel-admin/api/v1/statistic/room-booked-month?month=${monthBar}&year=${new Date().getFullYear()}`,
+                            {
+                                headers: {
+                                    ...(token && { Authorization: `Bearer ${token}` }),
+                                },
+                            },
+                        )
+                    ).json(),
+                    await (
+                        await fetch(
+                            `${
+                                process.env.REACT_APP_API_URL
+                            }/hotel-admin/api/v1/statistic/booking-status?month=${monthBar}&year=${new Date().getFullYear()}`,
                             {
                                 headers: {
                                     ...(token && { Authorization: `Bearer ${token}` }),
@@ -162,6 +175,10 @@ const Statistic = () => {
                         };
                         setBarData(chartData);
                     }
+                    if (promiseAll[3].value.status.code === '00') {
+                        const dataTotalBookingStatus = promiseAll[3].value.data;
+                        setTotalBookingStatus(dataTotalBookingStatus);
+                    }
                 }
             } catch (err) {
                 console.log(err);
@@ -260,6 +277,52 @@ const Statistic = () => {
                                 }}
                                 className="content-statistic-room"
                             >
+                                <Card style={{ marginTop: '15px' }}>
+                                    <h5
+                                        style={{
+                                            textAlign: 'center',
+                                            color: 'rgb(109 116 114)',
+                                            fontSize: '16px',
+                                            marginBottom: '20px',
+                                        }}
+                                    >
+                                        Booking Statistics
+                                    </h5>
+                                    <Row gutter={[16, 16]} justify="space-around">
+                                        <div style={{ textAlign: 'center' }}>
+                                            <Progress
+                                                type="circle"
+                                                percent={totalBookingStatus?.totalBookingCheckin}
+                                                format={() => `${totalBookingStatus?.totalBookingCheckin}`}
+                                            />
+                                            <p>Checkin</p>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <Progress
+                                                type="circle"
+                                                percent={totalBookingStatus?.totalBookingCheckout}
+                                                format={() => `${totalBookingStatus?.totalBookingCheckout}`}
+                                            />
+                                            <p>Checkout</p>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <Progress
+                                                type="circle"
+                                                percent={totalBookingStatus?.totalBookingPending}
+                                                format={() => `${totalBookingStatus?.totalBookingPending}`}
+                                            />
+                                            <p>Pending</p>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <Progress
+                                                type="circle"
+                                                percent={totalBookingStatus?.totalBookingCancel}
+                                                format={() => `${totalBookingStatus?.totalBookingCancel}`}
+                                            />
+                                            <p>Cancel</p>
+                                        </div>
+                                    </Row>
+                                </Card>
                                 {barData && (
                                     <Bar
                                         options={{

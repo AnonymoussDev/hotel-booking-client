@@ -6,11 +6,18 @@ import { useNavigate } from 'react-router-dom';
 import storageService from 'src/services/storage.service';
 import { receiveNotification, socket } from 'src/services/socketio.service';
 
-import { fetchGetNotificationsAdmin, fetchReadNotificationAdmin } from 'src/stores/notificationSlice/notificationSlice';
+import {
+    fetchGetNotificationsAdmin,
+    fetchReadNotificationAdmin,
+    fetchReadAllNotificationAdmin,
+} from 'src/stores/notificationSlice/notificationSlice';
 import handleResponse from 'src/utils/handleResponse';
 import Swal from 'sweetalert2';
 
 import logo from 'src/assets/images/logo.png';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Menu, Dropdown, Badge, Button, Avatar, Layout, Card, Typography, Space } from 'antd';
 import {
@@ -79,7 +86,31 @@ const AdminHeader = () => {
                     notification.id === id ? { ...notification, isRead: true } : notification,
                 ),
             );
-            setCountNotification((prevCount) => (prevCount > 1 ? prevCount - 1 : prevCount));
+            setCountNotification((prevCount) => (prevCount > 0 ? prevCount - 1 : prevCount));
+        } catch (error) {
+            console.error('Fetch read notifications error: ', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Đã có lỗi xảy ra. thông báo thất bại!',
+            });
+        }
+    };
+
+    const fetchReadAllNotification = async () => {
+        try {
+            setDropdownNotificationVisible(false);
+            const result = await dispatch(fetchReadAllNotificationAdmin());
+            const response = unwrapResult(result);
+            if (handleResponse(response)) {
+                return;
+            }
+            setNotifications((prevNotifications) =>
+                prevNotifications.map((notification) =>
+                    !notification.isRead ? { ...notification, isRead: true } : notification,
+                ),
+            );
+            setCountNotification(0);
         } catch (error) {
             console.error('Fetch read notifications error: ', error);
             Swal.fire({
@@ -103,6 +134,7 @@ const AdminHeader = () => {
             if (res?.data) {
                 setNotifications((prev) => [res.data, ...prev]);
                 setCountNotification((prevCount) => prevCount + 1);
+                toast.info(`Bạn có thông báo mới: ${res.data.title}`);
             }
         });
     }, [socket]);
@@ -145,6 +177,23 @@ const AdminHeader = () => {
             }}
             onScroll={handleScroll}
         >
+            <Menu.Item>
+                <Button
+                    onClick={() => {
+                        fetchReadAllNotification();
+                    }}
+                    style={{
+                        color: '#1890ff', // Màu xanh nhạt
+                        border: 'none',
+                        cursor: 'pointer',
+                        backgroundColor: 'transparent', // Không có nền
+                        textAlign: 'center',
+                    }}
+                    block
+                >
+                    Đánh dấu tất cả đã đọc
+                </Button>
+            </Menu.Item>
             {notifications.length > 0 ? (
                 notifications.map((notification, index) => (
                     <Menu.Item key={index} style={{ padding: '10px 10px' }}>
@@ -216,39 +265,51 @@ const AdminHeader = () => {
     );
 
     return (
-        <Header
-            style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                backgroundColor: '#fff',
-                padding: '0 30px',
-                position: 'sticky',
-                top: 0,
-                zIndex: 1001,
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-            }}
-        >
-            <div className="header-left" style={{ background: '#fff', position: 'sticky', top: 0 }}>
-                <img src={logo} alt="Logo" style={{ display: 'flex', height: '60px' }} />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <Dropdown
-                    overlay={notify}
-                    open={dropdownNotificationVisible}
-                    onOpenChange={() => setDropdownNotificationVisible(!dropdownNotificationVisible)}
-                    trigger={['click']}
-                    placement="bottomRight"
-                >
-                    <Badge count={countNotification}>
-                        <Button shape="circle" icon={<BellOutlined />} />
-                    </Badge>
-                </Dropdown>
-                <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-                    <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
-                </Dropdown>
-            </div>
-        </Header>
+        <>
+            <Header
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    backgroundColor: '#fff',
+                    padding: '0 30px',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1001,
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                }}
+            >
+                <div className="header-left" style={{ background: '#fff', position: 'sticky', top: 0 }}>
+                    <img src={logo} alt="Logo" style={{ display: 'flex', height: '60px' }} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <Dropdown
+                        overlay={notify}
+                        open={dropdownNotificationVisible}
+                        onOpenChange={() => setDropdownNotificationVisible(!dropdownNotificationVisible)}
+                        trigger={['click']}
+                        placement="bottomRight"
+                    >
+                        <Badge count={countNotification}>
+                            <Button shape="circle" icon={<BellOutlined />} />
+                        </Badge>
+                    </Dropdown>
+                    <Dropdown menu={{ items: menuItems }} trigger={['click']}>
+                        <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
+                    </Dropdown>
+                </div>
+            </Header>
+            <ToastContainer
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+        </>
     );
 };
 

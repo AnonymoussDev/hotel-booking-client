@@ -22,6 +22,15 @@ export const fetchReadNotificationAdmin = createAsyncThunk('/notification', asyn
     }
 });
 
+export const fetchReadAllNotificationAdmin = createAsyncThunk('/notifications', async (thunkAPI) => {
+    try {
+        const response = await notificationService.readAllNotificationAdmin();
+        return response.data;
+    } catch (err) {
+        return err.response.data;
+    }
+});
+
 const initialState = {
     value: {},
 };

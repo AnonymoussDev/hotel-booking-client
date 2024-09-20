@@ -119,16 +119,15 @@ const UpdateManage = () => {
         delete data['id'];
 
         if (option === 'rooms') {
-            if (!data.type) {
-                data.type = 'Standard Single';
-            }
-            data['mediaIds[]'] = data['medias'] ? data['medias'] : [];
+            // if (!data.type) {
+            //     data.type = 'Standard Single';
+            // }
             delete data['medias'];
             let files = data['files'] ? data['files'] : [];
             delete ['files'];
             let formData = new FormData();
             for (let file of files) {
-                formData.append('files', file);
+                formData.append('newMediaFiles', file);
             }
             for (let i in data) {
                 formData.append(i, data[i]);
@@ -198,11 +197,23 @@ const UpdateManage = () => {
 
     const handleDeleteImage = (option, index) => {
         if (option === 'old') {
+            const removedMedia = virtualOldImg[index];
             virtualOldImg.splice(index, 1);
             setVirtualOldImg([...virtualOldImg]);
             setData((prevState) => {
-                data['medias'] = virtualOldImg.map((medias) => medias.id);
-                return prevState;
+                // Lấy deleteMediaIds hiện tại từ prevState (nếu có) hoặc khởi tạo mảng mới
+                const updatedDeleteMediaIds = prevState.deleteMediaIds ? [...prevState.deleteMediaIds] : [];
+
+                // Thêm id của phần tử vừa bị xóa vào deleteMediaIds
+                if (removedMedia && removedMedia.id) {
+                    updatedDeleteMediaIds.push(removedMedia.id);
+                }
+
+                // Trả về state mới, giữ lại các giá trị cũ và cập nhật deleteMediaIds
+                return {
+                    ...prevState,
+                    deleteMediaIds: updatedDeleteMediaIds,
+                };
             });
         } else if (option === 'new') {
             virtualImg.splice(index, 1);
